@@ -1,27 +1,27 @@
 class Pk{
     constructor(data){
-        let allp=[],index=0;
+        this.state={
+            poker:[],
+        }
+        let {poker}=this.state,index=0;
         for(let i=2;i<17;i++){
-            if(i<15)
+            if(i<15)//2-A
                 for(let j=1;j<5;j++){
                     index++;
-                    allp.push({
+                    poker.push({
                         value:i,
                         color:j,
                         index:index
                     })
                 }
-            else{
+            else{//king
                 index++;
-                allp.push({
+                poker.push({
                     value:i,
                     color:4,
                     index:index
                 })
             }
-        }
-        this.state={
-            d:allp
         }
         this.random();
         this.random();

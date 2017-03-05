@@ -1,0 +1,29 @@
+<html >
+    <head>
+        <title>socket</title>
+        <script type="text/javascript" src="/js/socket.io.min.js"></script>
+    </head>
+    <body>
+        <h1 onclick='close'>Socket</h1>
+        fwefwefwef
+    </body>
+    <script>
+        window.onload=function(){
+            window.socket = io.connect('ws://localhost/index');
+            socket.on('wellcom',function(d){
+                socket.emit('zony',{data:'toJoin'});
+                
+            })
+            socket.on('new',function(data){
+                alert(data);
+                var news = io.connect('ws://localhost'+data.data);
+            })
+            window.a=function(){
+                socket.disconnected();
+            }
+            window.b=function(){
+                socket.emit('zony',{data:'reconnect'});
+            }
+        }
+    </script>
+</html>
