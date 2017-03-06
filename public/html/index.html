@@ -9,14 +9,14 @@
     </body>
     <script>
         window.onload=function(){
-            window.socket = io.connect('ws://localhost/index');
+            window.socket = io.connect('ws://localhost:2111/index');
             socket.on('wellcom',function(d){
                 socket.emit('zony',{data:'toJoin'});
                 
             })
             socket.on('new',function(data){
                 alert(data);
-                var news = io.connect('ws://localhost'+data.data);
+                var news = io.connect('ws://localhost:2111'+data.data);
             })
             window.a=function(){
                 socket.disconnected();

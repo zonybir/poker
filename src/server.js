@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser'),
     router = require('./routers/index.js');
 
 const server=(app,express)=>{
-    app.set('port',process.env.PORT || 80);
+    app.set('port',process.env.PORT || 2111);
     app.use(express.static(__dirname+'/../public'));
     app.use(session({
         secret:'zonybir',
