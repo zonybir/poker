@@ -73,9 +73,9 @@ gulp.task('webpack_dev',()=>{
             .pipe(gulp.dest('./'));
 })
 
-gulp.task('start',['index_html','sass_dev','webpack_dev'],()=>{
+gulp.task('start',['index_html','sass_dev'],()=>{
     gulp.watch('./*.html',['index_html'])
     gulp.watch('./lib/utils.js',['lib_concat_dev'])
-    gulp.watch('./src/style/*.scss',['sass_dev']);
+    gulp.watch('./style/*.scss',['sass_dev']);
     gulp.watch(['./src/**/*.js[x]','./src/entry.js'],['webpack_dev']);
 })

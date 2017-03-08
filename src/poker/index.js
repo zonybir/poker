@@ -2,59 +2,46 @@ class Pk{
     constructor(data){
         this.state={
             poker:[],
+            playerP:[[],[],[]],
+            levenP:[]
         }
         let {poker}=this.state,index=0;
-        for(let i=2;i<17;i++){
-            if(i<15)//2-A
-                for(let j=1;j<5;j++){
-                    index++;
-                    poker.push({
-                        value:i,
-                        color:j,
-                        index:index
-                    })
-                }
-            else{//king
-                index++;
-                poker.push({
-                    value:i,
-                    color:4,
-                    index:index
-                })
+        for(let j=1;j<5;j++){
+            for(let i=2;i<15;i++){
+                poker.push(j+'-'+i);
             }
         }
+        poker.push('5-88','6-88');
         this.random();
         this.random();
         this.random();
         this.random();
         this.getPlayerP();
-        this.byOrderPlayerP();
+        //this.byOrderPlayerP();
     }
     get(){
-        return this.state.d;
+        return this.state;
     }
     getRandomNum(){
         return 0+Math.round(Math.random()*(53-0));
     }
     random(){
-        let {d}=this.state;
+        let {poker}=this.state;
         for(let i=0;i<54;i++){
             let temp,first=this.getRandomNum(),sencod=this.getRandomNum();
-            temp=d[first];
-            d[first]=d[sencod];
-            d[sencod]=temp;
+            temp=poker[first];
+            poker[first]=poker[sencod];
+            poker[sencod]=temp;
         }
     }
     getPlayerP(){
-        let {d}=this.state,dipa=[],player=[[],[],[]];
+        let {poker,playerP,levenP}=this.state;
         for(let i=0;i<3;i++){
-            dipa.push(d.splice(this.getRandomNum(),1))
+            levenP.push((poker.splice(this.getRandomNum(),1))[0])
         }
-        for(let i=0,len=d.length;i<len;i++){
-            player[i%3].push(d[i])
+        for(let i=0,len=poker.length;i<len;i++){
+            playerP[i%3].push(poker[i])
         }
-        this.state.playerP=player;
-        this.state.levenP=dipa;
     }
     byOrderPlayerP(){
         let {playerP}=this.state;

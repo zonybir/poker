@@ -1,14 +1,31 @@
-
+const Poker=require('./poker/index.js');
+let playPoker={};
 const server=(io)=>{
     io.of('/index')
     .on('connection',(socket)=>{
         console.log('wellcome '+socket.id);
+        socket.emit('connectedOk',{data:'wellCom zonybir\'s Socket',statu:1})
 
-        socket.emit('wellcom',{data:'wellCom zonybir\'s Socket'})
-
-        socket.on('zony',(data)=>{
+        socket.on('addPlayHome',(data)=>{
             console.log(data);
-            socket.emit('new',{data:'/join'})
+            socket.emit('addHomeStatu',{
+                statu:1,
+                id:data.id
+            })
+        })
+
+        socket.on('getPoker',(data)=>{
+            playPoker=new Poker();
+            socket.emit('getPoker',{
+                poker:playPoker.get().playerP
+            })
+        })
+        socket.on('getLevePoker',(d)=>{
+            if(playPoker.hasSentLevenP) return;
+            playPoker.hasSentLevenP=1;
+            socket.emit('getLevePoker',{
+                data:playPoker.get().levenP
+            })
         })
     })
     .on('disconnected',()=>{
