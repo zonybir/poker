@@ -242,7 +242,7 @@
 	
 	var _socket = __webpack_require__(7);
 	
-	var _userPoker = __webpack_require__(9);
+	var _userPoker = __webpack_require__(8);
 	
 	var _userPoker2 = _interopRequireDefault(_userPoker);
 	
@@ -457,7 +457,26 @@
 	        var AllPoker = getState().Socket.pokerList,
 	            thisPoker = AllPoker[index],
 	            canSent = checkPokerRule(thisPoker, sentPokerList);
-	        console.log(canSent);
+	        //console.log(canSent);
+	        callBack(canSent);
+	        if (!canSent) return;
+	        sentPokerList.map(function (v, k) {
+	            for (var i = 0, len = thisPoker.length; i < len; i++) {
+	                if (thisPoker[i] == v) {
+	                    thisPoker.splice(i, 1);
+	                    break;
+	                }
+	            }
+	        });
+	        AllPoker[index] = thisPoker;
+	        var newPoker = [];
+	        AllPoker.map(function (v, k) {
+	            if (k == index) newPoker.push(thisPoker);else newPoker.push(v);
+	        });
+	        dispatch({
+	            type: 'setPoker',
+	            pokerList: newPoker
+	        });
 	    };
 	};
 	
@@ -480,10 +499,11 @@
 	}
 	
 	function checkPokerRule(poker, outList) {
+	    console.log(outList);
 	    var inPoker = outList.every(function (v) {
 	        return poker.indexOf(v) != -1;
 	    });
-	    if (!inPoker) return false;
+	    if (!inPoker) return false; // hack  without in this poker 
 	    var rule = { defPoker: [] };
 	    outList.map(function (v, k) {
 	        v = v.split('-')[1];
@@ -491,18 +511,19 @@
 	            rule[v] = 1;
 	            rule.defPoker.push(v - 0);
 	        } else rule[v]++;
-	    });
+	    }); //count diffrent poker item in rule,and push into defPoker
 	    rule.defPoker = rule.defPoker.sort(function (a, b) {
 	        return a - b;
-	    });
+	    }); // sort defPoker
 	    var diffrPokerNum = [],
-	        sameMax = 1,
+	        // diffrent poker num list
+	    sameMax = 1,
 	        sureRule = false,
 	        outPokerLen = rule.defPoker.length;
 	    rule.defPoker.map(function (v, k) {
 	        return diffrPokerNum.push(rule[v]);
 	    });
-	    sameMax = Math.max.apply(this, diffrPokerNum);
+	    sameMax = Math.max.apply(this, diffrPokerNum); // get max diffrent poker num 
 	    if (sameMax == 1) {
 	        //A       eg:A,ABCDE...
 	        var isSing = false;
@@ -533,71 +554,208 @@
 	        sureRule = isDoub ? isDoub : isDoubOrder;
 	    } else if (sameMax == 3) {
 	        //AAA     eg:AAAB,AAABB,AAABBB,     AAABBBCC,AAABBBCD
-	        var AAAX = false;
-	        if (outPokerLen == 2) AAAX = true;
-	        var AAABBBX = true;
-	        if (outPokerLen > 2) {
-	            var AAAlist = [];
-	            for (var _i2 = 0, _len3 = outPokerLen; _i2 < _len3; _i2++) {
-	                if (rule[rule.defPoker[_i2]] == 3) AAAlist.push(rule.defPoker[_i2]);
+	        var AAAX = false,
+	            AAABBBX = true;
+	        if (outPokerLen <= 2) AAAX = true;else {
+	            var AAAlist = [],
+	                withPokerList = [],
+	                withPokerNum = {};
+	            for (var _i2 = 0, _len3 = outPokerLen, p = 0; _i2 < _len3; _i2++) {
+	                p = rule.defPoker[_i2];
+	                if (rule[p] == 3) AAAlist.push(p);else {
+	                    withPokerNum[p] = rule[p];
+	                    withPokerList.push(p);
+	                }
 	            }
 	            var _len2 = AAAlist.length;
 	            if (_len2 <= 1) AAABBBX = false;else {
-	                var bt = outPokerLen - AAAlist.length;
+	                //min same poker is AAABBB
+	                for (var _i3 = 0, AAAlen = _len2 - 1; _i3 < AAAlen; _i3++) {
+	                    if (AAAlist[_i3] + 1 != AAAlist[_i3 + 1]) AAABBBX = false; // is not order by XXX
+	                }
 	            }
-	        } else AAABBBX = false;
-	    } else if (sameMax == 4) {//AAAA      AAAABC   AAAABB 
-	
-	    }
-	    console.log(sureRule);
-	    console.log(rule);
-	    return;
-	    if (rule.defPoker.length == 1) {
-	        //only defrent one poker  eg: A,AA,AAA,AAAA
-	        var outText = '',
-	            sinV = rule.defPoker[0],
-	            singNum = rule[sinV];
-	        outText = singNum == 1 ? '单个' : singNum == 2 ? sinV == 88 ? '王炸' : '对子' : singNum == 3 ? '三不带' : singNum == 4 ? '炸弹' : '你能开外挂';
-	        sureRule = true;
-	        console.log(outText);
-	    } else if (rule.defPoker.length == 2) {
-	        // has two defrent poker out    eg:AAAB,AAABB,AAABBB
-	        var _outText = '',
-	            hasThree = false,
-	            nextPoker = '',
-	            nextPokerNum = 0;
-	        rule.defPoker.map(function (v, k) {
-	            if (rule[v] == 3) hasThree = true;else nextPoker = v;
-	        });
-	        if (hasThree) {
-	            nextPokerNum = rule[nextPoker];
-	            _outText = nextPokerNum == 1 ? '三带一' : nextPokerNum == 2 ? '三带二' : nextPokerNum == 3 ? '双飞不带' : '';
+	            if (AAABBBX) {
+	                // checke with poker
+	                //let bt=outPokerLen-len;
+	                var factWithPokerNum = 0;
+	                withPokerList.map(function (v, k) {
+	                    factWithPokerNum += withPokerNum[v];
+	                });
+	                if (factWithPokerNum != _len2) {
+	                    //same poker num != withPokerNum
+	                    if (factWithPokerNum == 2 * _len2) {
+	                        withPokerList.map(function (v, k) {
+	                            if (withPokerNum[v] != 2) AAABBBX = false;
+	                        });
+	                    } else AAABBBX = false;
+	                }
+	            }
+	        };
+	        sureRule = AAAX ? AAAX : AAABBBX;
+	    } else if (sameMax == 4) {
+	        //AAAA      AAAABC   AAAABB 
+	        var AAAA = false;
+	        if (outPokerLen == 1) AAAA = true;else {
+	            var diffrentPokerListNum = 0,
+	                diffrentPokerNum = 0;
+	            rule.defPoker.map(function (v, k) {
+	                if (rule[v] != 4) {
+	                    diffrentPokerListNum++;
+	                    diffrentPokerNum += rule[v] - 0;
+	                }
+	            });
+	            if (diffrentPokerListNum == 1 && diffrentPokerNum == 2) AAAA = true;else if (diffrentPokerListNum == 2 && (diffrentPokerNum == 2 || diffrentPokerNum == 4)) AAAA = true;
 	        }
-	        sureRule = hasThree && !!_outText;
-	        console.log(_outText);
-	    } else if (rule.defPoker.length == 3) {//eg:AABBCC,AAABBBEE,AAAABC,
-	
-	    } else if (rule.defPoker.length > 4) {
-	        //order out
-	        var _isOrder = true;
-	        rule.defPoker.map(function (v, k) {
-	            //sure only one poker in this
-	            if (rule[v] != 1) _isOrder = false;
-	        });
-	        for (var _i3 = 0, _len4 = rule.defPoker.length - 1; _i3 < _len4; _i3++) {
-	            //sure order by poker;
-	            if (rule.defPoker[_i3] + 1 != rule.defPoker[_i3 + 1]) _isOrder = false;
-	            if (rule.defPoker[_i3] == 2 || rule.defPoker[_i3] == 88) _isOrder = false; // can not include 2 and king;
+	        //need more think.    eg  AAABBBBX  AAABBBCCCC AAABBBBCC AAABBBCCCDDDEEEE
+	        if (outPokerLen > 2) {
+	            alert('need more think.\neg:\nAAABBBBX  AAABBBCCCC AAABBBBCC AAABBBCCCDDDEEEE');
+	            var _AAAlist = [];
+	            rule.defPoker.map(function (v, k) {
+	                if (rule[v] >= 3) {}
+	            });
 	        }
-	        sureRule = _isOrder;
+	        sureRule = AAAA;
 	    }
-	
-	    console.log(sureRule);
-	    console.log(rule);
+	    //console.log(sureRule);
+	    return sureRule;
 	}
 
 /***/ },
 /* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _socket = __webpack_require__(7);
+	
+	var _pokeritem = __webpack_require__(9);
+	
+	var _pokeritem2 = _interopRequireDefault(_pokeritem);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var UserPoker = function (_React$Component) {
+	    _inherits(UserPoker, _React$Component);
+	
+	    function UserPoker(props) {
+	        _classCallCheck(this, UserPoker);
+	
+	        var _this = _possibleConstructorReturn(this, (UserPoker.__proto__ || Object.getPrototypeOf(UserPoker)).call(this, props));
+	
+	        _this.state = {
+	            sentPoker: []
+	        };
+	        return _this;
+	    }
+	
+	    _createClass(UserPoker, [{
+	        key: 'componentWillReceiveProps',
+	        value: function componentWillReceiveProps(nextProps) {
+	            this.setState({
+	                sentPoker: []
+	            });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+	
+	            var _props = this.props,
+	                dispatch = _props.dispatch,
+	                vp = _props.vp,
+	                kp = _props.kp,
+	                getLeven = _props.getLeven;
+	
+	            if (vp.length <= 0) {
+	                alert('you Win');
+	                return React.createElement(
+	                    'div',
+	                    { className: 'playerPoker' },
+	                    'you Win'
+	                );
+	            }
+	            return React.createElement(
+	                'div',
+	                { className: 'playerPoker' },
+	                React.createElement(
+	                    'h1',
+	                    null,
+	                    '\u89D2\u8272\uFF1A',
+	                    kp + 1
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: 'pokerContent' },
+	                    vp.map(function (v, k) {
+	                        return React.createElement(_pokeritem2.default, { k: k, v: v, key: "poker_item_" + k, willSent: _this2.state.sentPoker, selectPokerItem: _this2.handleSelectPokerItem.bind(_this2) });
+	                    })
+	                ),
+	                getLeven ? "" : React.createElement(
+	                    'h2',
+	                    { onClick: function onClick() {
+	                            _this2.props.callBack(kp);
+	                        } },
+	                    '\u5F97\u5230\u5730\u4E3B'
+	                ),
+	                React.createElement(
+	                    'p',
+	                    { onClick: this.handleSentPoker.bind(this, kp) },
+	                    '\u51FA\u724C'
+	                )
+	            );
+	        }
+	    }, {
+	        key: 'handleSentPoker',
+	        value: function handleSentPoker(index) {
+	            var sentPoker = this.state.sentPoker,
+	                dispatch = this.props.dispatch;
+	
+	            if (sentPoker.length <= 0) {
+	                alert('请选择你要出的牌');
+	                return;
+	            }
+	            dispatch((0, _socket.WillSentPoker)(index, sentPoker, function (d) {
+	                console.log(d);
+	            }));
+	        }
+	    }, {
+	        key: 'handleSelectPokerItem',
+	        value: function handleSelectPokerItem(v) {
+	            var sentPoker = this.state.sentPoker,
+	                newSentPoker = [],
+	                hashV = 0;;
+	            //console.log(sentPoker);
+	            for (var i = 0, len = sentPoker.length; i < len; i++) {
+	                //console.log(i);
+	                if (sentPoker[i] != v) newSentPoker.push(sentPoker[i]);else hashV = 1;
+	            }
+	            hashV ? '' : newSentPoker.push(v);
+	            //console.log(newSentPoker)
+	            this.setState({
+	                sentPoker: newSentPoker
+	            });
+	        }
+	    }]);
+	
+	    return UserPoker;
+	}(React.Component);
+	
+	exports.default = UserPoker;
+
+/***/ },
+/* 9 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -691,125 +849,6 @@
 	}(React.Component);
 	
 	exports.default = PokerItem;
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _socket = __webpack_require__(7);
-	
-	var _pokeritem = __webpack_require__(8);
-	
-	var _pokeritem2 = _interopRequireDefault(_pokeritem);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var UserPoker = function (_React$Component) {
-	    _inherits(UserPoker, _React$Component);
-	
-	    function UserPoker(props) {
-	        _classCallCheck(this, UserPoker);
-	
-	        var _this = _possibleConstructorReturn(this, (UserPoker.__proto__ || Object.getPrototypeOf(UserPoker)).call(this, props));
-	
-	        _this.state = {
-	            sentPoker: []
-	        };
-	        return _this;
-	    }
-	
-	    _createClass(UserPoker, [{
-	        key: 'render',
-	        value: function render() {
-	            var _this2 = this;
-	
-	            var _props = this.props,
-	                dispatch = _props.dispatch,
-	                vp = _props.vp,
-	                kp = _props.kp,
-	                getLeven = _props.getLeven;
-	
-	            return React.createElement(
-	                'div',
-	                { className: 'playerPoker' },
-	                React.createElement(
-	                    'h1',
-	                    null,
-	                    '\u89D2\u8272\uFF1A',
-	                    kp + 1
-	                ),
-	                React.createElement(
-	                    'div',
-	                    { className: 'pokerContent' },
-	                    vp.map(function (v, k) {
-	                        return React.createElement(_pokeritem2.default, { k: k, v: v, key: "poker_item_" + k, willSent: _this2.state.sentPoker, selectPokerItem: _this2.handleSelectPokerItem.bind(_this2) });
-	                    })
-	                ),
-	                getLeven ? "" : React.createElement(
-	                    'h2',
-	                    { onClick: function onClick() {
-	                            _this2.props.callBack(kp);
-	                        } },
-	                    '\u5F97\u5230\u5730\u4E3B'
-	                ),
-	                React.createElement(
-	                    'p',
-	                    { onClick: this.handleSentPoker.bind(this, kp) },
-	                    '\u51FA\u724C'
-	                )
-	            );
-	        }
-	    }, {
-	        key: 'handleSentPoker',
-	        value: function handleSentPoker(index) {
-	            var sentPoker = this.state.sentPoker,
-	                dispatch = this.props.dispatch;
-	
-	            if (sentPoker.length <= 0) {
-	                alert('请选择你要出的牌');
-	                return;
-	            }
-	            dispatch((0, _socket.WillSentPoker)(index, sentPoker, function () {
-	                console.log(1);
-	            }));
-	        }
-	    }, {
-	        key: 'handleSelectPokerItem',
-	        value: function handleSelectPokerItem(v) {
-	            var sentPoker = this.state.sentPoker,
-	                newSentPoker = [],
-	                hashV = 0;;
-	            //console.log(sentPoker);
-	            for (var i = 0, len = sentPoker.length; i < len; i++) {
-	                //console.log(i);
-	                if (sentPoker[i] != v) newSentPoker.push(sentPoker[i]);else hashV = 1;
-	            }
-	            hashV ? '' : newSentPoker.push(v);
-	            //console.log(newSentPoker)
-	            this.setState({
-	                sentPoker: newSentPoker
-	            });
-	        }
-	    }]);
-	
-	    return UserPoker;
-	}(React.Component);
-	
-	exports.default = UserPoker;
 
 /***/ }
 /******/ ]);

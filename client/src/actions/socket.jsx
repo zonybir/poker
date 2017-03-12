@@ -60,7 +60,27 @@ export const WillSentPoker=(index,sentPokerList,callBack)=>{
         let AllPoker=getState().Socket.pokerList,
             thisPoker=AllPoker[index],
             canSent=checkPokerRule(thisPoker,sentPokerList);
-        console.log(canSent);
+        //console.log(canSent);
+        callBack(canSent);
+        if(!canSent) return;
+        sentPokerList.map((v,k)=>{
+            for(let i=0,len=thisPoker.length;i<len;i++){
+                if(thisPoker[i] == v){
+                    thisPoker.splice(i,1);
+                    break;
+                }
+            }
+        })
+        AllPoker[index]=thisPoker;
+        let newPoker=[];
+        AllPoker.map((v,k)=>{
+            if(k==index) newPoker.push(thisPoker);
+            else newPoker.push(v);
+        })
+        dispatch({
+            type:'setPoker',
+            pokerList:newPoker
+        })
     }
 }
 
@@ -84,8 +104,9 @@ function sortPoker(arr){
 }
 
 function checkPokerRule(poker,outList){
+    console.log(outList);
     let inPoker=outList.every((v)=> {return poker.indexOf(v) != -1;})
-    if(!inPoker) return false;
+    if(!inPoker) return false;// hack  without in this poker 
     let rule={defPoker:[]};
     outList.map((v,k)=>{
         v=v.split('-')[1];
@@ -94,14 +115,14 @@ function checkPokerRule(poker,outList){
             rule.defPoker.push(v-0);
         }
         else rule[v]++;
-    })
-    rule.defPoker=rule.defPoker.sort((a,b)=>{return a-b;});
-    let diffrPokerNum=[],
+    })//count diffrent poker item in rule,and push into defPoker
+    rule.defPoker=rule.defPoker.sort((a,b)=>{return a-b;});// sort defPoker
+    let diffrPokerNum=[],// diffrent poker num list
         sameMax=1,
         sureRule=false,
         outPokerLen=rule.defPoker.length;
     rule.defPoker.map((v,k)=>diffrPokerNum.push(rule[v]));
-    sameMax=Math.max.apply(this,diffrPokerNum);
+    sameMax=Math.max.apply(this,diffrPokerNum);// get max diffrent poker num 
     if(sameMax==1){//A       eg:A,ABCDE...
         let isSing=false;
         if(outPokerLen==1) isSing=true;
@@ -129,68 +150,71 @@ function checkPokerRule(poker,outList){
         sureRule=isDoub?isDoub:isDoubOrder;
     }else
     if(sameMax==3){//AAA     eg:AAAB,AAABB,AAABBB,     AAABBBCC,AAABBBCD
-        let AAAX=false;
-        if(outPokerLen==2) AAAX=true;
-        let AAABBBX=true;
-        if(outPokerLen>2){
-            let AAAlist=[];
-            for(let i=0,len=outPokerLen;i<len;i++){
-                if(rule[rule.defPoker[i]] ==3 ) AAAlist.push(rule.defPoker[i]);
+        let AAAX=false,AAABBBX=true;
+        if(outPokerLen<=2) AAAX=true;
+        else{
+            let AAAlist=[],
+                withPokerList=[],
+                withPokerNum={};
+            for(let i=0,len=outPokerLen,p=0;i<len;i++){
+                p=rule.defPoker[i];
+                if(rule[p] ==3 ) AAAlist.push(p);
+                else {
+                    withPokerNum[p]=rule[p];
+                    withPokerList.push(p);
+                }
             }
             let len=AAAlist.length;
             if(len<=1) AAABBBX=false;
-            else{
-                let bt=outPokerLen-AAAlist.length;
+            else{//min same poker is AAABBB
+                for(let i=0,AAAlen=len-1;i<AAAlen;i++){
+                    if(AAAlist[i]+1 != AAAlist[i+1]) AAABBBX=false;// is not order by XXX
+                }
             }
-        }else AAABBBX=false;
+            if(AAABBBX){// checke with poker
+                //let bt=outPokerLen-len;
+                let factWithPokerNum=0;
+                withPokerList.map((v,k)=>{
+                    factWithPokerNum+=withPokerNum[v];
+                });
+                if(factWithPokerNum != len){//same poker num != withPokerNum
+                    if(factWithPokerNum == 2*len){
+                        withPokerList.map((v,k)=>{
+                            if(withPokerNum[v] != 2) AAABBBX=false;
+                        })
+                    }else AAABBBX=false;
+                }
+            }
+        };
+        sureRule=AAAX?AAAX:AAABBBX;
     }else
     if(sameMax==4){//AAAA      AAAABC   AAAABB 
-
-    }
-    console.log(sureRule);
-    console.log(rule);
-    return;
-    if(rule.defPoker.length==1){//only defrent one poker  eg: A,AA,AAA,AAAA
-        let outText='',
-            sinV=rule.defPoker[0],
-            singNum=rule[sinV];
-        outText=singNum==1?'单个':singNum==2?sinV==88?'王炸':'对子':singNum==3?'三不带':singNum==4?'炸弹':'你能开外挂';
-        sureRule=true;
-        console.log(outText);
-    }else 
-    if(rule.defPoker.length==2){// has two defrent poker out    eg:AAAB,AAABB,AAABBB
-        let outText='',
-            hasThree=false,
-            nextPoker='',
-            nextPokerNum=0;
+        let AAAA=false;
+        if(outPokerLen == 1)  AAAA=true;
+        else{
+            let diffrentPokerListNum=0,
+                diffrentPokerNum=0;
             rule.defPoker.map((v,k)=>{
-                if(rule[v] == 3) hasThree=true;
-                else nextPoker=v;
-            })
-            if(hasThree){
-                nextPokerNum=rule[nextPoker];
-                outText=nextPokerNum==1?'三带一':nextPokerNum==2?'三带二':nextPokerNum==3?'双飞不带':'';
-            }
-            sureRule=(hasThree && !!outText);
-            console.log(outText);
-
-    }else
-    if(rule.defPoker.length==3){//eg:AABBCC,AAABBBEE,AAAABC,
-
-    }else
-    if(rule.defPoker.length>4){//order out
-        let isOrder=true;
-        rule.defPoker.map((v,k)=>{//sure only one poker in this
-            if(rule[v] != 1) isOrder=false;
-        })
-        for(let i=0,len=rule.defPoker.length-1;i<len;i++){//sure order by poker;
-            if(rule.defPoker[i]+1 != rule.defPoker[i+1]) isOrder=false;
-            if(rule.defPoker[i] == 2 || rule.defPoker[i]==88) isOrder=false;// can not include 2 and king;
+                if(rule[v] != 4) {
+                    diffrentPokerListNum++;
+                    diffrentPokerNum+=(rule[v]-0);
+                }
+            });
+            if(diffrentPokerListNum == 1 && diffrentPokerNum==2) AAAA=true;
+            else if(diffrentPokerListNum ==2 && (diffrentPokerNum==2 || diffrentPokerNum==4)) AAAA=true;
         }
-        sureRule=isOrder;
-    }
-    
-    console.log(sureRule);
-    console.log(rule);
+        //need more think.    eg  AAABBBBX  AAABBBCCCC AAABBBBCC AAABBBCCCDDDEEEE
+        if(outPokerLen>2){
+            alert('need more think.\neg:\nAAABBBBX  AAABBBCCCC AAABBBBCC AAABBBCCCDDDEEEE')
+            let AAAlist=[];
+            rule.defPoker.map((v,k)=>{
+                if(rule[v] >= 3){
 
+                }
+            })
+        }
+        sureRule=AAAA;
+    }
+    //console.log(sureRule);
+    return sureRule;
 }

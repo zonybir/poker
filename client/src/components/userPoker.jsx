@@ -10,8 +10,21 @@ export default class UserPoker extends React.Component{
             sentPoker:[]
         }
     }
+    componentWillReceiveProps(nextProps){
+        this.setState({
+            sentPoker:[]
+        })
+    }
     render(){
         let {dispatch,vp,kp,getLeven}=this.props;
+        if(vp.length<=0){
+        alert('you Win');
+            return(
+                <div className='playerPoker'>
+                    you Win
+                </div>
+            )
+        }
         return(
             <div className='playerPoker'>
                 <h1>角色：{kp+1}</h1>
@@ -37,8 +50,8 @@ export default class UserPoker extends React.Component{
             alert('请选择你要出的牌');
             return;
         }
-        dispatch(WillSentPoker(index,sentPoker,()=>{
-            console.log(1);
+        dispatch(WillSentPoker(index,sentPoker,(d)=>{
+            console.log(d);
         }))
 
     }
