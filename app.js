@@ -6,7 +6,7 @@ const express = require('express'),
     app=express(),
     server = http.Server(app)
     io = socket(server);
-
+console.log('testing');
 expressServerCore(app,express);
 socketServerCore(io);
 
