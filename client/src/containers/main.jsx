@@ -20,18 +20,16 @@ class Index extends React.Component{
         }
     }
     componentDidMount(){
-        InitSocket(this.props.dispatch);
+        //InitSocket(this.props.dispatch);
         this.props.dispatch(hallList());
         let {loginStatus,userInfo}=this.props;
         if(!loginStatus) location.hash='login';
     }
     render(){
+        return <div>main</div>;
         let {hallList,dispatch,socketStatu,addHomeStatu,homeId,pokerList,
                 loginStatus,userInfo
             }=this.props;
-        console.log(loginStatus);
-        console.log(userInfo);
-        
         if(homeId && addHomeStatu){
             return(
                 <div id='index'>

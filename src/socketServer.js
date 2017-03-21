@@ -1,6 +1,18 @@
 const Poker=require('./poker/index.js');
 let playPoker={};
 const server=(io)=>{
+
+    io.use((socket,next)=>{
+        console.log('----------------');
+        console.log(socket.request.session.user);
+        let user = socket.request.session.user;
+        if(user && user.id){
+            socket.request.session.user.view++;
+            next();
+        }
+        else return false;
+    })
+
     io.of('/index')
     .on('connection',(socket)=>{
         console.log('wellcome '+socket.id);
@@ -31,6 +43,7 @@ const server=(io)=>{
     .on('disconnected',()=>{
         console.log('close index Socket');
     })
+
     io.of('join')
     .on('connection',(socket)=>{
         console.log('connection join');

@@ -14,20 +14,26 @@ function get(url,json){
     return send_request('GET',url);
 }
 
+function post(url,json){
+    console.log(json);
+    return send_request('POST',url,json);
+}
+
+
 function send_request(method,url,body){
     var host='',
     token='fji30vbu89nifhj23er32jgk9875ij9',
-    httpHeader={
+    httpHeader=new Headers({
         zonybir:token
-    }
+    }),
     config={
         method:method,
-        headers:new Headers(httpHeader),
         credentials:'same-origin'
-    }
-
-    if(method.toLocaleLowerCase()=='post') config.body=body;
-
+    };
+    httpHeader.append('Content-Type','application/json');
+    config.headers=httpHeader;
+    if(method.toLocaleLowerCase()=='post') config.body=JSON.stringify(body);
+    console.log(config)
     return new Promise(function(resolve,reject){
         fetch(host+url,config)
         .then(function(res){
