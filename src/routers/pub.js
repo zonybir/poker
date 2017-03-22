@@ -9,16 +9,16 @@ router.post('/login', function(req, res) {
     //console.log(req.params);
     let {name,password}=req.body;
     console.log(name,password);
-    if(name==1 && password==1){
+    if(name && password==1){
         let use={
-            name:'guest',
+            name:name,
             id:(new Date()).getTime(),
             view:1
         };
         req.session.user=use
-        res.status(200).json({message:'登录成功',status:1,data:use});
+        res.status(200).json({message:'登录成功',status:1,data:use,code:200});
     }else{
-        res.status(200).json({message:'用户名或密码错误',status:0,data:{}});
+        res.status(200).json({message:'用户名或密码错误',status:0,data:{},code:403});
     }
     
 });

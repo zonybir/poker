@@ -5,12 +5,13 @@ export const Login=(name,password)=>{
             password:password
         })
         .then((d)=>{
+            ls('isLogin',1)('userInfo',d.data);
             dispatch({
                 type:'Login',
                 status:d.status,
                 userInfo:d.data
             })
-            location.hash='index'
+            location.hash='index';
         })
     }
 }

@@ -7,10 +7,6 @@ class LoginPage extends React.Component{
     constructor(props){
         super(props);
     }
-    componentDidMount(){
-        let {status}=this.props;
-        if(status) location.hash='/';
-    }
     render(){
         let {dispatch,status}=this.props;
         return(

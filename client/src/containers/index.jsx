@@ -12,6 +12,7 @@ import {
 
 
 import UserPoker from '../components/userPoker';
+import HallChat from './hall_chat';
 class Index extends React.Component{
     constructor(props){
         super(props);
@@ -49,8 +50,14 @@ class Index extends React.Component{
             )
         }
         return(
-            <div id='index'>
-                <h1>IndexPage</h1>
+            <div id='hall'>
+                <div className='header'>
+                    <div className='container'>
+                        <div className='left'>ZONYBIR</div>
+                        <div className='right'><span>Wellcome {userInfo.name}</span></div>
+                    </div>
+                    
+                </div>
                 <h2>{socketStatu?'ok':'fail'}</h2>
                 {
                     hallList.map((v,k)=>{
@@ -61,6 +68,7 @@ class Index extends React.Component{
                         )
                     })
                 }
+                <HallChat dispatch={dispatch} />
             </div>
         )
     }

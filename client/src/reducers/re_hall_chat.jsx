@@ -1,15 +1,18 @@
 
 const initState={
-    status:ls('isLogin'),
-    userInfo:ls('userInfo')||{}
+    status:0,
+    msg:{
+        flag:0,
+        data:{}
+    }
 }
 
-function Pub(state=initState,action){
+function HallChat(state=initState,action){
     switch(action.type){
-        case 'Login':{
+        case 'hallChat':{
             return Object.assign({},state,{
                 status:action.status,
-                userInfo:action.userInfo
+                msg:action.msg
             })
         }
         default:{
@@ -17,4 +20,4 @@ function Pub(state=initState,action){
         }
     }
 }
-export default Pub;
+export default HallChat;

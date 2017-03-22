@@ -13,6 +13,30 @@ const server=(io)=>{
         else return false;
     })
 
+    const hall_chat=io.of('/hall_chat')
+    .on('connection',(socket)=>{
+        //socket.set('nikename',socket.request.session.user.name);
+        hall_chat.emit('connectedOk',
+        {
+            name:'管理员',
+            time:(new Date()).getTime(),
+            info:socket.request.session.user.name+' 连接到服务器成功！'
+        });
+
+        socket.on('newMsg',(msg,fn)=>{
+            //socket.get('nickname',(err,name)=>{
+                console.log(msg);
+                socket.emit('recieveMsgOk');
+                socket.broadcast.emit('newMsg',{
+                    name:socket.request.session.user.name,
+                    time:(new Date()).getTime(),
+                    info:msg.info
+                });
+            //})
+            fn();
+        })
+    })
+
     io.of('/index')
     .on('connection',(socket)=>{
         console.log('wellcome '+socket.id);
