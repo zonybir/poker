@@ -50,7 +50,7 @@
 	
 	var _reducers2 = _interopRequireDefault(_reducers);
 	
-	var _routes = __webpack_require__(4);
+	var _routes = __webpack_require__(5);
 	
 	var _routes2 = _interopRequireDefault(_routes);
 	
@@ -96,6 +96,14 @@
 	
 	var _socket2 = _interopRequireDefault(_socket);
 	
+	var _re_pub = __webpack_require__(4);
+	
+	var _re_pub2 = _interopRequireDefault(_re_pub);
+	
+	var _re_hall_chat = __webpack_require__(15);
+	
+	var _re_hall_chat2 = _interopRequireDefault(_re_hall_chat);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var _Redux = Redux,
@@ -106,6 +114,8 @@
 	    reducer = combineReducers({
 	    Hall: _sec2.default,
 	    Socket: _socket2.default,
+	    Pub: _re_pub2.default,
+	    HallChat: _re_hall_chat2.default,
 	    routing: routing
 	});
 	exports.default = reducer;
@@ -201,7 +211,7 @@
 
 /***/ },
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	'use strict';
 	
@@ -209,22 +219,30 @@
 	    value: true
 	});
 	
-	var _index = __webpack_require__(5);
+	var initState = {
+	    status: ls('isLogin'),
+	    userInfo: ls('userInfo') || {}
+	};
 	
-	var _index2 = _interopRequireDefault(_index);
+	function Pub() {
+	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initState;
+	    var action = arguments[1];
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var _ReactRouter = ReactRouter,
-	    Router = _ReactRouter.Router,
-	    Route = _ReactRouter.Route,
-	    IndexRoute = _ReactRouter.IndexRoute;
-	exports.default = React.createElement(
-	    Router,
-	    null,
-	    React.createElement(Router, { path: '/', component: _index2.default }),
-	    React.createElement(Route, { path: '*', component: _index2.default })
-	);
+	    switch (action.type) {
+	        case 'Login':
+	            {
+	                return Object.assign({}, state, {
+	                    status: action.status,
+	                    userInfo: action.userInfo
+	                });
+	            }
+	        default:
+	            {
+	                return state;
+	            }
+	    }
+	}
+	exports.default = Pub;
 
 /***/ },
 /* 5 */
@@ -236,13 +254,49 @@
 	    value: true
 	});
 	
+	var _main = __webpack_require__(6);
+	
+	var _main2 = _interopRequireDefault(_main);
+	
+	var _index = __webpack_require__(11);
+	
+	var _index2 = _interopRequireDefault(_index);
+	
+	var _login = __webpack_require__(12);
+	
+	var _login2 = _interopRequireDefault(_login);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var _ReactRouter = ReactRouter,
+	    Router = _ReactRouter.Router,
+	    Route = _ReactRouter.Route,
+	    IndexRoute = _ReactRouter.IndexRoute;
+	exports.default = React.createElement(
+	    Router,
+	    null,
+	    React.createElement(Router, { path: 'index', component: _index2.default }),
+	    React.createElement(Router, { path: 'login', component: _login2.default }),
+	    React.createElement(Route, { path: '*', component: _main2.default })
+	);
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _hall = __webpack_require__(6);
+	var _hall = __webpack_require__(7);
 	
-	var _socket = __webpack_require__(7);
+	var _socket = __webpack_require__(8);
 	
-	var _userPoker = __webpack_require__(8);
+	var _userPoker = __webpack_require__(9);
 	
 	var _userPoker2 = _interopRequireDefault(_userPoker);
 	
@@ -274,21 +328,33 @@
 	    _createClass(Index, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            (0, _socket.InitSocket)(this.props.dispatch);
+	            //InitSocket(this.props.dispatch);
 	            this.props.dispatch((0, _hall.hallList)());
+	            var _props = this.props,
+	                loginStatus = _props.loginStatus,
+	                userInfo = _props.userInfo;
+	
+	            if (!loginStatus) location.hash = 'login';
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var _this2 = this;
 	
-	            var _props = this.props,
-	                hallList = _props.hallList,
-	                dispatch = _props.dispatch,
-	                socketStatu = _props.socketStatu,
-	                addHomeStatu = _props.addHomeStatu,
-	                homeId = _props.homeId,
-	                pokerList = _props.pokerList;
+	            return React.createElement(
+	                'div',
+	                null,
+	                'main'
+	            );
+	            var _props2 = this.props,
+	                hallList = _props2.hallList,
+	                dispatch = _props2.dispatch,
+	                socketStatu = _props2.socketStatu,
+	                addHomeStatu = _props2.addHomeStatu,
+	                homeId = _props2.homeId,
+	                pokerList = _props2.pokerList,
+	                loginStatus = _props2.loginStatus,
+	                userInfo = _props2.userInfo;
 	
 	            if (homeId && addHomeStatu) {
 	                return React.createElement(
@@ -357,14 +423,17 @@
 	        socketStatu: state.Socket.statu,
 	        addHomeStatu: state.Socket.addHomeStatu,
 	        homeId: state.Socket.homeId,
-	        pokerList: state.Socket.pokerList
+	        pokerList: state.Socket.pokerList,
+	
+	        loginStatus: state.Pub.status,
+	        userInfo: state.Pub.userInfo
 	    };
 	};
 	
 	exports.default = connect(selectState)(Index);
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -377,7 +446,7 @@
 	        get('/hall/getlist').then(function (d) {
 	            dispatch({
 	                type: 'hallList',
-	                data: d
+	                data: d.data.list
 	            });
 	        });
 	    };
@@ -388,7 +457,7 @@
 	};
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -621,7 +690,7 @@
 	}
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -632,9 +701,9 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _socket = __webpack_require__(7);
+	var _socket = __webpack_require__(8);
 	
-	var _pokeritem = __webpack_require__(9);
+	var _pokeritem = __webpack_require__(10);
 	
 	var _pokeritem2 = _interopRequireDefault(_pokeritem);
 	
@@ -755,7 +824,7 @@
 	exports.default = UserPoker;
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -849,6 +918,475 @@
 	}(React.Component);
 	
 	exports.default = PokerItem;
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _hall = __webpack_require__(7);
+	
+	var _socket = __webpack_require__(8);
+	
+	var _userPoker = __webpack_require__(9);
+	
+	var _userPoker2 = _interopRequireDefault(_userPoker);
+	
+	var _hall_chat = __webpack_require__(16);
+	
+	var _hall_chat2 = _interopRequireDefault(_hall_chat);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var _ReactRedux = ReactRedux,
+	    connect = _ReactRedux.connect;
+	
+	var Index = function (_React$Component) {
+	    _inherits(Index, _React$Component);
+	
+	    function Index(props) {
+	        _classCallCheck(this, Index);
+	
+	        var _this = _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
+	
+	        _this.state = {
+	            getLeven: 0
+	        };
+	        return _this;
+	    }
+	
+	    _createClass(Index, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            (0, _socket.InitSocket)(this.props.dispatch);
+	            this.props.dispatch((0, _hall.hallList)());
+	            var _props = this.props,
+	                loginStatus = _props.loginStatus,
+	                userInfo = _props.userInfo;
+	
+	            if (!loginStatus) location.hash = 'login';
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+	
+	            var _props2 = this.props,
+	                hallList = _props2.hallList,
+	                dispatch = _props2.dispatch,
+	                socketStatu = _props2.socketStatu,
+	                addHomeStatu = _props2.addHomeStatu,
+	                homeId = _props2.homeId,
+	                pokerList = _props2.pokerList,
+	                loginStatus = _props2.loginStatus,
+	                userInfo = _props2.userInfo;
+	
+	            console.log(loginStatus);
+	            console.log(userInfo);
+	
+	            if (homeId && addHomeStatu) {
+	                return React.createElement(
+	                    'div',
+	                    { id: 'index' },
+	                    React.createElement(
+	                        'h4',
+	                        null,
+	                        'addHome ',
+	                        homeId
+	                    ),
+	                    pokerList.length <= 0 ? React.createElement(
+	                        'p',
+	                        { onClick: function onClick() {
+	                                (0, _socket.getPoker)(dispatch);
+	                            } },
+	                        'click to get poker'
+	                    ) : pokerList.map(function (vp, kp) {
+	                        return React.createElement(_userPoker2.default, { kp: kp, vp: vp, key: 'user_play_' + kp, getLeven: _this2.state.getLeven, callBack: _this2.handleGetLeven.bind(_this2), dispatch: dispatch });
+	                    })
+	                );
+	            }
+	            return React.createElement(
+	                'div',
+	                { id: 'hall' },
+	                React.createElement(
+	                    'div',
+	                    { className: 'header' },
+	                    React.createElement(
+	                        'div',
+	                        { className: 'container' },
+	                        React.createElement(
+	                            'div',
+	                            { className: 'left' },
+	                            'ZONYBIR'
+	                        ),
+	                        React.createElement(
+	                            'div',
+	                            { className: 'right' },
+	                            React.createElement(
+	                                'span',
+	                                null,
+	                                'Wellcome ',
+	                                userInfo.name
+	                            )
+	                        )
+	                    )
+	                ),
+	                React.createElement(
+	                    'h2',
+	                    null,
+	                    socketStatu ? 'ok' : 'fail'
+	                ),
+	                hallList.map(function (v, k) {
+	                    return React.createElement(
+	                        'div',
+	                        { onClick: function onClick() {
+	                                (0, _socket.AddPlayHome)(dispatch, v);
+	                            }, key: 'hall_home_' + k },
+	                        v
+	                    );
+	                }),
+	                React.createElement(_hall_chat2.default, { dispatch: dispatch })
+	            );
+	        }
+	    }, {
+	        key: 'handleGetLeven',
+	        value: function handleGetLeven(kp) {
+	            var _this3 = this;
+	
+	            this.setState({
+	                getLeven: 1
+	            }, function () {
+	                _this3.props.dispatch((0, _socket.getLevePoker)(kp));
+	            });
+	        }
+	    }]);
+	
+	    return Index;
+	}(React.Component);
+	
+	var selectState = function selectState(state, ownProps) {
+	    return {
+	        hallList: state.Hall.hallList,
+	        socketStatu: state.Socket.statu,
+	        addHomeStatu: state.Socket.addHomeStatu,
+	        homeId: state.Socket.homeId,
+	        pokerList: state.Socket.pokerList,
+	
+	        loginStatus: state.Pub.status,
+	        userInfo: state.Pub.userInfo
+	    };
+	};
+	
+	exports.default = connect(selectState)(Index);
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _ac_pub = __webpack_require__(13);
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var _ReactRedux = ReactRedux,
+	    connect = _ReactRedux.connect;
+	
+	var LoginPage = function (_React$Component) {
+	    _inherits(LoginPage, _React$Component);
+	
+	    function LoginPage(props) {
+	        _classCallCheck(this, LoginPage);
+	
+	        return _possibleConstructorReturn(this, (LoginPage.__proto__ || Object.getPrototypeOf(LoginPage)).call(this, props));
+	    }
+	
+	    _createClass(LoginPage, [{
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+	
+	            var _props = this.props,
+	                dispatch = _props.dispatch,
+	                status = _props.status;
+	
+	            return React.createElement(
+	                'div',
+	                { id: 'login' },
+	                React.createElement(
+	                    'div',
+	                    { className: 'login_content' },
+	                    React.createElement('input', { type: 'text', placeholder: 'your name', ref: 'name' }),
+	                    React.createElement('br', null),
+	                    React.createElement('input', { type: 'password', placeholder: 'your password', ref: 'password' }),
+	                    React.createElement('br', null),
+	                    React.createElement('input', { type: 'submit', value: 'sign in', onClick: function onClick() {
+	                            return _this2.handleLogin();
+	                        } })
+	                )
+	            );
+	        }
+	    }, {
+	        key: 'handleLogin',
+	        value: function handleLogin() {
+	            var name = this.refs.name.value,
+	                pwd = this.refs.password.value;
+	            if (name && pwd) this.props.dispatch((0, _ac_pub.Login)(name, pwd));else alert('请填写用户名和密码');
+	        }
+	    }]);
+	
+	    return LoginPage;
+	}(React.Component);
+	
+	var selectState = function selectState(state, ownProps) {
+	    return {
+	        status: state.Pub.status
+	    };
+	};
+	
+	exports.default = connect(selectState)(LoginPage);
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var Login = exports.Login = function Login(name, password) {
+	    return function (dispatch, getState) {
+	        post('/pub/login', {
+	            name: name,
+	            password: password
+	        }).then(function (d) {
+	            ls('isLogin', 1)('userInfo', d.data);
+	            dispatch({
+	                type: 'Login',
+	                status: d.status,
+	                userInfo: d.data
+	            });
+	            location.hash = 'index';
+	        });
+	    };
+	};
+
+/***/ },
+/* 14 */,
+/* 15 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var initState = {
+	    status: 0,
+	    msg: {
+	        flag: 0,
+	        data: {}
+	    }
+	};
+	
+	function HallChat() {
+	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initState;
+	    var action = arguments[1];
+	
+	    switch (action.type) {
+	        case 'hallChat':
+	            {
+	                return Object.assign({}, state, {
+	                    status: action.status,
+	                    msg: action.msg
+	                });
+	            }
+	        default:
+	            {
+	                return state;
+	            }
+	    }
+	}
+	exports.default = HallChat;
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _ac_hall_chat = __webpack_require__(17);
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var _ReactRedux = ReactRedux,
+	    connect = _ReactRedux.connect;
+	
+	var HallChat = function (_React$Component) {
+	    _inherits(HallChat, _React$Component);
+	
+	    function HallChat(props) {
+	        _classCallCheck(this, HallChat);
+	
+	        return _possibleConstructorReturn(this, (HallChat.__proto__ || Object.getPrototypeOf(HallChat)).call(this, props));
+	    }
+	
+	    _createClass(HallChat, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var _props = this.props,
+	                status = _props.status,
+	                dispatch = _props.dispatch;
+	
+	            if (!status) dispatch((0, _ac_hall_chat.InitHallChat)(dispatch));
+	        }
+	    }, {
+	        key: 'componentWillReceiveProps',
+	        value: function componentWillReceiveProps(nextProps) {
+	            if (this.props.flag != nextProps.flag) {
+	                this.appendChatInfo(nextProps.msg);
+	                nextProps.msg.isSelft ? this.refs.user_chat_info.value = '' : '';
+	            }
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+	
+	            return React.createElement(
+	                'div',
+	                { className: 'hall_chat_fixed' },
+	                React.createElement(
+	                    'div',
+	                    { className: 'chat_containter', id: 'chat_main_box' },
+	                    React.createElement('ul', { className: 'chat_content', id: 'chat_containers_hall' })
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: 'send_container' },
+	                    React.createElement('textarea', { ref: 'user_chat_info' }),
+	                    React.createElement(
+	                        'span',
+	                        { onClick: function onClick() {
+	                                return _this2.handleSentMeg();
+	                            } },
+	                        '\u53D1\u9001'
+	                    )
+	                )
+	            );
+	        }
+	    }, {
+	        key: 'appendChatInfo',
+	        value: function appendChatInfo(v) {
+	            var dom = d_id('chat_containers_hall');
+	            var MsgContainer = create_dom('li', '', '\n            <p class=\'title\'>' + v.name + '<span>' + v.time + '</span></p>\n            <div class=\'info\'>' + v.info + '</div>\n        ');
+	            dom.appendChild(MsgContainer);
+	            d_id('chat_main_box').scrollTop = 1000000000;
+	        }
+	    }, {
+	        key: 'handleSentMeg',
+	        value: function handleSentMeg() {
+	            this.props.dispatch((0, _ac_hall_chat.SentMsg)({
+	                time: new Date().getTime(),
+	                info: this.refs.user_chat_info.value
+	            }));
+	        }
+	    }]);
+	
+	    return HallChat;
+	}(React.Component);
+	
+	var selectState = function selectState(state) {
+	    return {
+	        status: state.HallChat.status,
+	        flag: state.HallChat.msg.flag,
+	        msg: state.HallChat.msg.data
+	    };
+	};
+	exports.default = connect(selectState)(HallChat);
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var hallChat = {},
+	    hallDispatch = '';
+	var InitHallChat = exports.InitHallChat = function InitHallChat(dispatch) {
+	    hallDispatch = dispatch;
+	
+	    hallChat = io.connect('ws://' + location.host + '/hall_chat');
+	
+	    hallChat.on('connectedOk', setChatInfo);
+	    hallChat.on('newMsg', setChatInfo);
+	    //hallChat.on('recieveMsgOk',setChatInfo);
+	    return {
+	        type: ''
+	    };
+	};
+	
+	var SentMsg = exports.SentMsg = function SentMsg(msg) {
+	    hallChat.emit('newMsg', msg, function (data) {
+	        msg.isSelft = 1;
+	        msg.flag = new Date().getTime();
+	        msg.name = ls('userInfo').name;
+	        setChatInfo(msg);
+	    });
+	    return {
+	        type: ''
+	    };
+	};
+	var setChatInfo = function setChatInfo(msg) {
+	    console.log(msg);
+	    msg.time = get_date(msg.time);
+	    hallDispatch({
+	        type: 'hallChat',
+	        status: 1,
+	        msg: {
+	            flag: new Date().getTime(),
+	            data: msg
+	        }
+	    });
+	};
 
 /***/ }
 /******/ ]);

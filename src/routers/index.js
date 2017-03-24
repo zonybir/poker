@@ -1,11 +1,12 @@
 const zony = require('./zony.js');
 const hall = require('./hall.js');
+const pub = require('./pub.js');
 const router=(app,express)=>{
     console.log(__dirname);
     app.get('/',(req,res)=>{
         res.send('homePage');
     })
-    
+    app.use('/pub',pub);
     app.use('/zony',zony);
     app.use('/hall',hall);
 

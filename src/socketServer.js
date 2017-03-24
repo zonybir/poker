@@ -1,6 +1,42 @@
 const Poker=require('./poker/index.js');
 let playPoker={};
 const server=(io)=>{
+
+    io.use((socket,next)=>{
+        console.log('----------------');
+        console.log(socket.request.session.user);
+        let user = socket.request.session.user;
+        if(user && user.id){
+            socket.request.session.user.view++;
+            next();
+        }
+        else return false;
+    })
+
+    const hall_chat=io.of('/hall_chat')
+    .on('connection',(socket)=>{
+        //socket.set('nikename',socket.request.session.user.name);
+        hall_chat.emit('connectedOk',
+        {
+            name:'管理员',
+            time:(new Date()).getTime(),
+            info:socket.request.session.user.name+' 连接到服务器成功！'
+        });
+
+        socket.on('newMsg',(msg,fn)=>{
+            //socket.get('nickname',(err,name)=>{
+                console.log(msg);
+                socket.emit('recieveMsgOk');
+                socket.broadcast.emit('newMsg',{
+                    name:socket.request.session.user.name,
+                    time:(new Date()).getTime(),
+                    info:msg.info
+                });
+            //})
+            fn();
+        })
+    })
+
     io.of('/index')
     .on('connection',(socket)=>{
         console.log('wellcome '+socket.id);
@@ -31,6 +67,7 @@ const server=(io)=>{
     .on('disconnected',()=>{
         console.log('close index Socket');
     })
+
     io.of('join')
     .on('connection',(socket)=>{
         console.log('connection join');

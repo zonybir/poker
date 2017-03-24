@@ -4,7 +4,7 @@ export const hallList=()=>{
         .then((d)=>{
             dispatch({
                 type:'hallList',
-                data:d
+                data:d.data.list
             })
         })
     }

@@ -12,7 +12,6 @@ import {
 
 
 import UserPoker from '../components/userPoker';
-import HallChat from './hall_chat';
 class Index extends React.Component{
     constructor(props){
         super(props);
@@ -21,18 +20,16 @@ class Index extends React.Component{
         }
     }
     componentDidMount(){
-        InitSocket(this.props.dispatch);
+        //InitSocket(this.props.dispatch);
         this.props.dispatch(hallList());
         let {loginStatus,userInfo}=this.props;
         if(!loginStatus) location.hash='login';
     }
     render(){
+        return <div>main</div>;
         let {hallList,dispatch,socketStatu,addHomeStatu,homeId,pokerList,
                 loginStatus,userInfo
             }=this.props;
-        console.log(loginStatus);
-        console.log(userInfo);
-        
         if(homeId && addHomeStatu){
             return(
                 <div id='index'>
@@ -50,14 +47,8 @@ class Index extends React.Component{
             )
         }
         return(
-            <div id='hall'>
-                <div className='header'>
-                    <div className='container'>
-                        <div className='left'>ZONYBIR</div>
-                        <div className='right'><span>Wellcome {userInfo.name}</span></div>
-                    </div>
-                    
-                </div>
+            <div id='index'>
+                <h1>IndexPage</h1>
                 <h2>{socketStatu?'ok':'fail'}</h2>
                 {
                     hallList.map((v,k)=>{
@@ -68,7 +59,6 @@ class Index extends React.Component{
                         )
                     })
                 }
-                <HallChat dispatch={dispatch} />
             </div>
         )
     }
