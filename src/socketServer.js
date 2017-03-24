@@ -37,10 +37,19 @@ const server=(io)=>{
         })
     })
 
-    io.of('/index')
+    io.of('/game')
     .on('connection',(socket)=>{
-        console.log('wellcome '+socket.id);
         socket.emit('connectedOk',{data:'wellCom zonybir\'s Socket',statu:1})
+
+        socket.on('redygo',(d,fn)=>{//entry game home and wait start
+            console.log(socket.request.session.user.name);
+            let user=socket.request.session.user,
+                gameId=global.gameUser[user.name];
+            if(!gameId){fn('非法登录');}
+            else{
+                fn(socket.request.session.user);
+            }
+        })
 
         socket.on('addPlayHome',(data)=>{
             console.log(data);

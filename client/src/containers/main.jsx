@@ -3,13 +3,6 @@ import {
     hallList,
     joinGame
 } from '../actions/hall';
-import {
-    InitSocket,
-    AddPlayHome,
-    getPoker,
-    getLevePoker
-} from '../actions/socket';
-
 
 import UserPoker from '../components/userPoker';
 class Index extends React.Component{
@@ -21,7 +14,7 @@ class Index extends React.Component{
     }
     componentDidMount(){
         //InitSocket(this.props.dispatch);
-        this.props.dispatch(hallList());
+        //this.props.dispatch(hallList());
         let {loginStatus,userInfo}=this.props;
         if(!loginStatus) location.hash='login';
     }

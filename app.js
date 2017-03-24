@@ -3,11 +3,7 @@ const express = require('express'),
     socket = require('socket.io'),
     socketServerCore = require('./src/socketServer.js');
     app=express(),
-    server = http.Server(app)
-<<<<<<< HEAD
-    io = socket(server);
-console.log('testing');
-expressServerCore(app,express);
+    server = http.Server(app),
     io = socket(server),
 
     cookieParser = require('cookie-parser'),
@@ -20,7 +16,9 @@ app.set('port',process.env.PORT || 2111);
 app.use(express.static(__dirname+'/public'));
 
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(bodyParser.json({ type: 'application/json' })); //
+app.use(bodyParser.raw({ type: 'application/vnd.custom-type' }));
+app.use(bodyParser.text({ type: 'text/html' }));
 
 app.use(cookieParser());
 var sessionMiddleware = session({
@@ -33,6 +31,16 @@ var sessionMiddleware = session({
  })
 app.use(sessionMiddleware);
 
+global.hall=[];
+global.gameUser={};
+[1,2,3,4,5].map((v,k)=>{
+    let id=Math.round(Math.random()*10000);
+    global.hall.push({
+        id:id,
+        user:[],
+        dz:0
+    })
+})
 router(app);
 socketServerCore(io);
 

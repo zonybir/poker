@@ -1,7 +1,13 @@
 
 const initState={
-    socket:{},
     statu:0,
+    homeInfo:{},
+    redyStatus:0,
+    pokerData:[],
+
+    
+    socket:{},
+    
     addHomeStatu:0,
     homeId:0,
     pokerList:[]
@@ -9,6 +15,16 @@ const initState={
 
 function Hall(state=initState,action){
     switch(action.type){
+        case 'GameSetHomeInfo':{
+            return Object.assign({},state,{
+                homeInfo:action.data
+            })
+        }
+        case 'GamePubSet':{
+            return Object.assign({},state,{
+                [action.key]:action.value
+            })
+        }
         case 'setConnectName':{
             return Object.assign({},state,{
                 [action.key]:action.socket

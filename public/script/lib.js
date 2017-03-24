@@ -28994,7 +28994,7 @@ function get(url,json){
             }
         }
     }
-    url=str?url+'?'+str.splice(0,-1):url;
+    url=str?url+'?'+str.slice(0,-1):url;
     return send_request('GET',url);
 }
 

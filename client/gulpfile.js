@@ -8,7 +8,8 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     order = require('gulp-order'),
     concat = require('gulp-concat'),
-    clean = require('gulp-clean');
+    clean = require('gulp-clean'),
+    livereload = require('livereload');
 
 var buildDir='../public',
     libOrderJs=['redux.js','react.js','react-dom.js','react-redux.js','redux-thunk.js','react-router.js','react-router-redux.js',
@@ -74,6 +75,13 @@ gulp.task('webpack_dev',()=>{
 })
 
 gulp.task('start',['index_html','sass_dev'],()=>{
+
+    let server=livereload.createServer({
+        port:5811,
+        applyCSSLive:false
+    });
+    server.watch(['../public/style/*.css','../public/index.html','../public/script/*.js']);
+
     gulp.watch('./*.html',['index_html'])
     gulp.watch('./lib/utils.js',['lib_concat_dev'])
     gulp.watch('./style/*.scss',['sass_dev']);
