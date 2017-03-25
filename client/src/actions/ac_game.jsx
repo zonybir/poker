@@ -1,15 +1,50 @@
-var player={};
-export const InitSocket=(dispatch)=>{
-    player = io.connect('ws://'+location.host+'/index');
-    console.log(player);
+var player={},
+    dispatch,
+    pokerList=[];
+export const Init=(ReducerDispatch)=>{
+    dispatch=ReducerDispatch;
+    player = io.connect('ws://'+location.host+'/game');
+
     player.on('connectedOk',function(d){
         dispatch({
             type:'soket_connectHome',
             statu:d.statu
         })
     })
-}
 
+    player.on('startGame',(d)=>{
+        pokerList=d.data.list
+        dispatch({
+            type:'GamePubSet',
+            key:'pokerData',
+            data:{
+                list:d.data.list.sort(pokerSort),
+                super:d.data.super
+            }
+        })
+    })
+
+    player.on('setSuper',(d)=>{
+        dispatch({
+            type:'GamePubSet',
+            key:'pokerData',
+            data:{
+                list:pokerList.concat(d.data).sort(pokerSort),
+                super:1
+            }
+        })
+    })
+}
+export const RedyGo=()=>{
+    player.emit('redygo',{},(d)=>{
+        console.log(d);
+        dispatch({
+            type:'GamePubSet',
+            key:'redyStatus',
+            value:1
+        })
+    })
+}
 export const AddPlayHome=(dispatch,homeId)=>{
     player.emit('addPlayHome',{
         id:homeId
@@ -94,13 +129,6 @@ function pokerSort(a,b){
     if(value==0) return color;
     return value;
     
-}
-function sortPoker(arr){
-    let n=[[],[],[]];
-    arr.map((v,k)=>{
-        n[k]=v.sort(pokerSort);
-    })
-    return n;
 }
 
 function checkPokerRule(poker,outList){
