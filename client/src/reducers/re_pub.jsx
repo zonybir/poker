@@ -1,7 +1,8 @@
 
 const initState={
     status:ls('isLogin'),
-    userInfo:ls('userInfo')||{}
+    userInfo:ls('userInfo')||{},
+    hallList:[]
 }
 
 function Pub(state=initState,action){
@@ -10,6 +11,11 @@ function Pub(state=initState,action){
             return Object.assign({},state,{
                 status:action.status,
                 userInfo:action.userInfo
+            })
+        }
+        case 'HallList':{
+            return Object.assign({},state,{
+                hallList:action.data
             })
         }
         default:{

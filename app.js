@@ -31,15 +31,17 @@ var sessionMiddleware = session({
  })
 app.use(sessionMiddleware);
 
-global.hall=[];
+global.hall={};
 global.gameUser={};
 [1,2,3,4,5].map((v,k)=>{
     let id=Math.round(Math.random()*10000);
-    global.hall.push({
-        id:id,
+    global.gameUser[id]={
         user:[],
-        dz:0
-    })
+        super:-99
+    };
+    global.hall[id]={
+        user:[]
+    }
 })
 router(app);
 socketServerCore(io);

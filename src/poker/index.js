@@ -43,14 +43,5 @@ class Pk{
             playerP[i%3].push(poker[i])
         }
     }
-    byOrderPlayerP(){
-        let {playerP}=this.state;
-        playerP.map((v,k)=>{
-            playerP[k]=v.sort(this.playerPSort);
-        })
-    }
-    playerPSort(a,b){
-        return a.index-b.index;
-    }
 }
 module.exports=Pk;

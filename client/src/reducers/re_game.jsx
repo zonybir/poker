@@ -3,36 +3,30 @@ const initState={
     statu:0,
     homeInfo:{},
     redyStatus:0,
-    pokerData:[],
-
+    pokerData:{list:[]},
     
     socket:{},
     
     addHomeStatu:0,
     homeId:0,
-    pokerList:[]
+
+
+    pokerList:[],
+    sureSuper:0,
+    willSuper:0
 }
 
 function Hall(state=initState,action){
     switch(action.type){
-        case 'GameSetHomeInfo':{
-            return Object.assign({},state,{
-                homeInfo:action.data
-            })
-        }
         case 'GamePubSet':{
             return Object.assign({},state,{
                 [action.key]:action.value
             })
         }
-        case 'setConnectName':{
+        case 'GameConnectInit':{
             return Object.assign({},state,{
-                [action.key]:action.socket
-            })
-        }
-        case 'soket_connectHome':{
-            return Object.assign({},state,{
-                statu:action.statu
+                statu:action.statu,
+                homeInfo:action.homeInfo
             })
         }
         case 'soket_addHome':{
@@ -41,9 +35,11 @@ function Hall(state=initState,action){
                 homeId:action.homeId
             })
         }
-        case 'setPoker':{
+        case 'GamePokerSet':{
             return Object.assign({},state,{
-                pokerList:action.pokerList
+                pokerList:action.poker,
+                sureSuper:action.sureSuper,
+                willSuper:action.willSuper
             })
         }
         default:{

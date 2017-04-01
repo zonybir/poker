@@ -1,121 +1,105 @@
-var player={},
+var player,
     dispatch,
     pokerList=[];
-export const Init=(ReducerDispatch)=>{
+export const Init=(ReducerDispatch,homeId)=>{
     dispatch=ReducerDispatch;
-    player = io.connect('ws://'+location.host+'/game');
+    if(typeof player == 'undefined'){
+        player = io.connect('ws://'+location.host+'/game');
+        LisentAdd(homeId);
+    }else
+    player.emit('JionGameHome',{id:homeId},(d)=>{
+        dispatch({
+            type:'GameConnectInit',
+            statu:d.status,
+            homeInfo:d.data
+        })
+    }) 
+}
+
+const LisentAdd=(homeId)=>{
+    
+    player.on('ERROR',(d)=>{
+        console.log(d.data);
+        location.hash='index';
+    })
+    player.on('namespace',(d)=>{
+        console.log(d.msg);
+    })
 
     player.on('connectedOk',function(d){
-        dispatch({
-            type:'soket_connectHome',
-            statu:d.statu
-        })
+        let status=d.statu;
+        player.emit('JionGameHome',{id:homeId},(d)=>{
+            dispatch({
+                type:'GameConnectInit',
+                statu:d.status,
+                homeInfo:d.data
+            })
+        }) 
+    
     })
 
-    player.on('startGame',(d)=>{
-        pokerList=d.data.list
-        dispatch({
-            type:'GamePubSet',
-            key:'pokerData',
-            data:{
-                list:d.data.list.sort(pokerSort),
-                super:d.data.super
-            }
-        })
-    })
-
-    player.on('setSuper',(d)=>{
-        dispatch({
-            type:'GamePubSet',
-            key:'pokerData',
-            data:{
-                list:pokerList.concat(d.data).sort(pokerSort),
-                super:1
-            }
+    player.on('startGame',()=>{
+        player.emit('startGame',{},(d)=>{
+            pokerList=d.list;
+            console.log(d);
+            dispatch({
+                type:'GamePokerSet',
+                poker:pokerList.sort(pokerSort),
+                sureSuper:0,
+                willSuper:d.super
+            })
         })
     })
 }
+
 export const RedyGo=()=>{
     player.emit('redygo',{},(d)=>{
         console.log(d);
         dispatch({
             type:'GamePubSet',
             key:'redyStatus',
-            value:1
+            value:d.status
         })
     })
 }
-export const AddPlayHome=(dispatch,homeId)=>{
-    player.emit('addPlayHome',{
-        id:homeId
-    })
-    player.on('addHomeStatu',(d)=>{
-        dispatch({
-            type:'soket_addHome',
-            statu:d.statu,
-            homeId:d.id
-        })
-    })
+export const CheckUserInHome=(homeId)=>{
+    player.emit('checkUserInHome',{id:homeId},(d)=>{})
 }
 
-export const getPoker=(dispatch)=>{
-    player.emit('getPoker');
-    player.on('getPoker',(d)=>{
-        let poker=sortPoker(d.poker);
-        console.log(poker);
-        dispatch({
-            type:'setPoker',
-            pokerList:poker
-        })
-    })
-}
-
-export const getLevePoker=(playerIndex)=>{
-    return (dispatch,getState)=>{
-        player.emit('getLevePoker');
-        player.on('getLevePoker',(d)=>{
-            let AllP=getState().Socket.pokerList,
-                poker;
-            console.log(d.data);
-            d.data.map((v,k)=>{
-                AllP[playerIndex].push(v);
-            })
-            poker=sortPoker(AllP);
+export const ImSuper=()=>{
+    player.emit('imSuper',{},(d)=>{
+        if(d.status){
+            console.log(pokerList.concat(d.poker).sort(pokerSort));
+            console.log(d.poker)
             dispatch({
-                type:'setPoker',
-                pokerList:poker
+                type:'GamePokerSet',
+                poker:pokerList.concat(d.poker).sort(pokerSort),
+                sureSuper:1,
+                willSuper:0
             })
-        })
-    }
-    
+        }else alert('你不是地主');
+    })
 }
 
-export const WillSentPoker=(index,sentPokerList,callBack)=>{
+export const WillSentPoker=(sentPokerList,callBack)=>{
     return (dispatch,getState)=>{
-        let AllPoker=getState().Socket.pokerList,
-            thisPoker=AllPoker[index],
-            canSent=checkPokerRule(thisPoker,sentPokerList);
-        //console.log(canSent);
+        let pokerList=getState().Game.pokerList,
+            canSent=checkPokerRule(pokerList,sentPokerList);
         callBack(canSent);
         if(!canSent) return;
-        sentPokerList.map((v,k)=>{
-            for(let i=0,len=thisPoker.length;i<len;i++){
-                if(thisPoker[i] == v){
-                    thisPoker.splice(i,1);
-                    break;
+        else{
+            player.emit('sentPoker',{poker:sentPokerList},(d)=>{
+                if(!d.status){
+                    alert(d.msg);
+                }else{
+                    dispatch({
+                        type:'GamePubSet',
+                        key:'pokerList',
+                        value:JSON.parse(JSON.stringify(pokerList))
+                    })
                 }
-            }
-        })
-        AllPoker[index]=thisPoker;
-        let newPoker=[];
-        AllPoker.map((v,k)=>{
-            if(k==index) newPoker.push(thisPoker);
-            else newPoker.push(v);
-        })
-        dispatch({
-            type:'setPoker',
-            pokerList:newPoker
-        })
+            })
+        }
     }
 }
 

@@ -88,11 +88,7 @@
 	    value: true
 	});
 	
-	var _sec = __webpack_require__(2);
-	
-	var _sec2 = _interopRequireDefault(_sec);
-	
-	var _re_game = __webpack_require__(20);
+	var _re_game = __webpack_require__(3);
 	
 	var _re_game2 = _interopRequireDefault(_re_game);
 	
@@ -112,7 +108,6 @@
 	    routerReducer = _ReactRouterRedux.routerReducer,
 	    routing = routerReducer,
 	    reducer = combineReducers({
-	    Hall: _sec2.default,
 	    Game: _re_game2.default,
 	    Pub: _re_pub2.default,
 	    HallChat: _re_hall_chat2.default,
@@ -121,7 +116,8 @@
 	exports.default = reducer;
 
 /***/ },
-/* 2 */
+/* 2 */,
+/* 3 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -130,8 +126,22 @@
 	    value: true
 	});
 	
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+	
 	var initState = {
-	    hallList: []
+	    statu: 0,
+	    homeInfo: {},
+	    redyStatus: 0,
+	    pokerData: { list: [] },
+	
+	    socket: {},
+	
+	    addHomeStatu: 0,
+	    homeId: 0,
+	
+	    pokerList: [],
+	    sureSuper: 0,
+	    willSuper: 0
 	};
 	
 	function Hall() {
@@ -139,10 +149,30 @@
 	    var action = arguments[1];
 	
 	    switch (action.type) {
-	        case 'hallList':
+	        case 'GamePubSet':
+	            {
+	                return Object.assign({}, state, _defineProperty({}, action.key, action.value));
+	            }
+	        case 'GameConnectInit':
 	            {
 	                return Object.assign({}, state, {
-	                    hallList: action.data
+	                    statu: action.statu,
+	                    homeInfo: action.homeInfo
+	                });
+	            }
+	        case 'soket_addHome':
+	            {
+	                return Object.assign({}, state, {
+	                    addHomeStatu: action.statu,
+	                    homeId: action.homeId
+	                });
+	            }
+	        case 'GamePokerSet':
+	            {
+	                return Object.assign({}, state, {
+	                    pokerList: action.poker,
+	                    sureSuper: action.sureSuper,
+	                    willSuper: action.willSuper
 	                });
 	            }
 	        default:
@@ -154,7 +184,6 @@
 	exports.default = Hall;
 
 /***/ },
-/* 3 */,
 /* 4 */
 /***/ function(module, exports) {
 
@@ -166,7 +195,8 @@
 	
 	var initState = {
 	    status: ls('isLogin'),
-	    userInfo: ls('userInfo') || {}
+	    userInfo: ls('userInfo') || {},
+	    hallList: []
 	};
 	
 	function Pub() {
@@ -179,6 +209,12 @@
 	                return Object.assign({}, state, {
 	                    status: action.status,
 	                    userInfo: action.userInfo
+	                });
+	            }
+	        case 'HallList':
+	            {
+	                return Object.assign({}, state, {
+	                    hallList: action.data
 	                });
 	            }
 	        default:
@@ -237,28 +273,25 @@
 	    value: true
 	});
 	
-	var _main = __webpack_require__(7);
-	
-	var _main2 = _interopRequireDefault(_main);
-	
-	var _index = __webpack_require__(12);
+	var _index = __webpack_require__(7);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
-	var _login = __webpack_require__(15);
+	var _login = __webpack_require__(11);
 	
 	var _login2 = _interopRequireDefault(_login);
 	
-	var _hall = __webpack_require__(17);
+	var _hall = __webpack_require__(13);
 	
 	var _hall2 = _interopRequireDefault(_hall);
 	
-	var _game_home = __webpack_require__(18);
+	var _game_home = __webpack_require__(14);
 	
 	var _game_home2 = _interopRequireDefault(_game_home);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	//import Main from './containers/main'
 	var _ReactRouter = ReactRouter,
 	    Router = _ReactRouter.Router,
 	    Route = _ReactRouter.Route,
@@ -270,10 +303,10 @@
 	        Router,
 	        { path: 'index', component: _index2.default },
 	        React.createElement(IndexRoute, { component: _hall2.default }),
-	        React.createElement(Route, { path: 'game', component: _game_home2.default })
+	        React.createElement(Route, { path: 'game/:id', component: _game_home2.default })
 	    ),
 	    React.createElement(Router, { path: 'login', component: _login2.default }),
-	    React.createElement(Route, { path: '*', component: _main2.default })
+	    React.createElement(Route, { path: '*', component: _index2.default })
 	);
 
 /***/ },
@@ -288,408 +321,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _hall = __webpack_require__(8);
-	
-	var _userPoker = __webpack_require__(10);
-	
-	var _userPoker2 = _interopRequireDefault(_userPoker);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var _ReactRedux = ReactRedux,
-	    connect = _ReactRedux.connect;
-	
-	var Index = function (_React$Component) {
-	    _inherits(Index, _React$Component);
-	
-	    function Index(props) {
-	        _classCallCheck(this, Index);
-	
-	        var _this = _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
-	
-	        _this.state = {
-	            getLeven: 0
-	        };
-	        return _this;
-	    }
-	
-	    _createClass(Index, [{
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            //InitSocket(this.props.dispatch);
-	            //this.props.dispatch(hallList());
-	            var _props = this.props,
-	                loginStatus = _props.loginStatus,
-	                userInfo = _props.userInfo;
-	
-	            if (!loginStatus) location.hash = 'login';
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            var _this2 = this;
-	
-	            return React.createElement(
-	                'div',
-	                null,
-	                'main'
-	            );
-	            var _props2 = this.props,
-	                hallList = _props2.hallList,
-	                dispatch = _props2.dispatch,
-	                socketStatu = _props2.socketStatu,
-	                addHomeStatu = _props2.addHomeStatu,
-	                homeId = _props2.homeId,
-	                pokerList = _props2.pokerList,
-	                loginStatus = _props2.loginStatus,
-	                userInfo = _props2.userInfo;
-	
-	            if (homeId && addHomeStatu) {
-	                return React.createElement(
-	                    'div',
-	                    { id: 'index' },
-	                    React.createElement(
-	                        'h4',
-	                        null,
-	                        'addHome ',
-	                        homeId
-	                    ),
-	                    pokerList.length <= 0 ? React.createElement(
-	                        'p',
-	                        { onClick: function onClick() {
-	                                getPoker(dispatch);
-	                            } },
-	                        'click to get poker'
-	                    ) : pokerList.map(function (vp, kp) {
-	                        return React.createElement(_userPoker2.default, { kp: kp, vp: vp, key: 'user_play_' + kp, getLeven: _this2.state.getLeven, callBack: _this2.handleGetLeven.bind(_this2), dispatch: dispatch });
-	                    })
-	                );
-	            }
-	            return React.createElement(
-	                'div',
-	                { id: 'index' },
-	                React.createElement(
-	                    'h1',
-	                    null,
-	                    'IndexPage'
-	                ),
-	                React.createElement(
-	                    'h2',
-	                    null,
-	                    socketStatu ? 'ok' : 'fail'
-	                ),
-	                hallList.map(function (v, k) {
-	                    return React.createElement(
-	                        'div',
-	                        { onClick: function onClick() {
-	                                AddPlayHome(dispatch, v);
-	                            }, key: 'hall_home_' + k },
-	                        v
-	                    );
-	                })
-	            );
-	        }
-	    }, {
-	        key: 'handleGetLeven',
-	        value: function handleGetLeven(kp) {
-	            var _this3 = this;
-	
-	            this.setState({
-	                getLeven: 1
-	            }, function () {
-	                _this3.props.dispatch(getLevePoker(kp));
-	            });
-	        }
-	    }]);
-	
-	    return Index;
-	}(React.Component);
-	
-	var selectState = function selectState(state, ownProps) {
-	    return {
-	        hallList: state.Hall.hallList,
-	        socketStatu: state.Socket.statu,
-	        addHomeStatu: state.Socket.addHomeStatu,
-	        homeId: state.Socket.homeId,
-	        pokerList: state.Socket.pokerList,
-	
-	        loginStatus: state.Pub.status,
-	        userInfo: state.Pub.userInfo
-	    };
-	};
-	
-	exports.default = connect(selectState)(Index);
-
-/***/ },
-/* 8 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var hallList = exports.hallList = function hallList() {
-	    return function (dispatch, getState) {
-	        get('/hall/list').then(function (d) {
-	            dispatch({
-	                type: 'hallList',
-	                data: d.data.list
-	            });
-	        });
-	    };
-	};
-	
-	var joinGame = exports.joinGame = function joinGame(homeId) {
-	    return function (dispatch, getState) {
-	        get('/hall/join', {
-	            id: homeId
-	        }).then(function (d) {
-	            dispatch({
-	                type: 'GameSetHomeInfo',
-	                data: d.data
-	            });
-	            location.hash = 'index/game';
-	        });
-	    };
-	};
-
-/***/ },
-/* 9 */,
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _ac_game = __webpack_require__(19);
-	
-	var _pokeritem = __webpack_require__(11);
-	
-	var _pokeritem2 = _interopRequireDefault(_pokeritem);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var UserPoker = function (_React$Component) {
-	    _inherits(UserPoker, _React$Component);
-	
-	    function UserPoker(props) {
-	        _classCallCheck(this, UserPoker);
-	
-	        var _this = _possibleConstructorReturn(this, (UserPoker.__proto__ || Object.getPrototypeOf(UserPoker)).call(this, props));
-	
-	        _this.state = {
-	            sentPoker: []
-	        };
-	        return _this;
-	    }
-	
-	    _createClass(UserPoker, [{
-	        key: 'componentWillReceiveProps',
-	        value: function componentWillReceiveProps(nextProps) {
-	            this.setState({
-	                sentPoker: []
-	            });
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            var _this2 = this;
-	
-	            var _props = this.props,
-	                dispatch = _props.dispatch,
-	                data = _props.data;
-	
-	            return React.createElement(
-	                'div',
-	                { className: 'playerPoker' },
-	                React.createElement(
-	                    'div',
-	                    { className: 'pokerContent' },
-	                    data.map(function (v, k) {
-	                        return React.createElement(_pokeritem2.default, { k: k, v: v, key: "poker_item_" + k, willSent: _this2.state.sentPoker, selectPokerItem: _this2.handleSelectPokerItem.bind(_this2) });
-	                    })
-	                ),
-	                React.createElement(
-	                    'h2',
-	                    { onClick: function onClick() {
-	                            _this2.props.callBack(kp);
-	                        } },
-	                    '\u62A2\u5730\u4E3B'
-	                ),
-	                React.createElement(
-	                    'p',
-	                    { onClick: this.handleSentPoker.bind(this) },
-	                    '\u51FA\u724C'
-	                )
-	            );
-	        }
-	    }, {
-	        key: 'handleSentPoker',
-	        value: function handleSentPoker(index) {
-	            var sentPoker = this.state.sentPoker,
-	                dispatch = this.props.dispatch;
-	
-	            if (sentPoker.length <= 0) {
-	                alert('请选择你要出的牌');
-	                return;
-	            }
-	            dispatch((0, _ac_game.WillSentPoker)(index, sentPoker, function (d) {
-	                console.log(d);
-	            }));
-	        }
-	    }, {
-	        key: 'handleSelectPokerItem',
-	        value: function handleSelectPokerItem(v) {
-	            var sentPoker = this.state.sentPoker,
-	                newSentPoker = [],
-	                hashV = 0;;
-	            //console.log(sentPoker);
-	            for (var i = 0, len = sentPoker.length; i < len; i++) {
-	                //console.log(i);
-	                if (sentPoker[i] != v) newSentPoker.push(sentPoker[i]);else hashV = 1;
-	            }
-	            hashV ? '' : newSentPoker.push(v);
-	            //console.log(newSentPoker)
-	            this.setState({
-	                sentPoker: newSentPoker
-	            });
-	        }
-	    }]);
-	
-	    return UserPoker;
-	}(React.Component);
-	
-	exports.default = UserPoker;
-
-/***/ },
-/* 11 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var PokerItem = function (_React$Component) {
-	    _inherits(PokerItem, _React$Component);
-	
-	    function PokerItem(props) {
-	        _classCallCheck(this, PokerItem);
-	
-	        return _possibleConstructorReturn(this, (PokerItem.__proto__ || Object.getPrototypeOf(PokerItem)).call(this, props));
-	    }
-	
-	    _createClass(PokerItem, [{
-	        key: 'render',
-	        value: function render() {
-	            var _this2 = this;
-	
-	            var _props = this.props,
-	                v = _props.v,
-	                k = _props.k,
-	                willSent = _props.willSent;
-	
-	            var pokerValueA = this.pokerValue(v),
-	                isWillSent = 0;
-	            willSent.map(function (vi, ki) {
-	                if (v == vi) isWillSent = 1;
-	            });
-	            return React.createElement(
-	                'div',
-	                { className: 'pokerItem ' + pokerValueA[0].color, style: { left: 30 * k + 'px', top: isWillSent ? '0' : '20px' }, onClick: function onClick() {
-	                        _this2.props.selectPokerItem(v);
-	                    } },
-	                React.createElement(
-	                    'span',
-	                    { className: 'pokerValue' },
-	                    pokerValueA[1]
-	                ),
-	                React.createElement(
-	                    'span',
-	                    { className: 'pokerColortext' },
-	                    pokerValueA[0].text
-	                )
-	            );
-	        }
-	    }, {
-	        key: 'pokerColor',
-	        value: function pokerColor(v) {
-	            switch (v - 0) {
-	                case 1:
-	                    return { text: '黑桃', color: 'blank' };
-	                case 2:
-	                    return { text: '红桃', color: 'red' };
-	                case 3:
-	                    return { text: '梅花', color: 'flower' };
-	                case 4:
-	                    return { text: '方块', color: 'area' };
-	                case 5:
-	                    return { text: '小王', color: 'king_s' };
-	                case 6:
-	                    return { text: '大王', color: 'king' };
-	            }
-	        }
-	    }, {
-	        key: 'pokerIndex',
-	        value: function pokerIndex(v) {
-	            v -= 0;
-	            return v == 11 ? 'J' : v == 12 ? 'Q' : v == 13 ? 'K' : v == 14 ? 'A' : v == 88 ? '王' : v;
-	        }
-	    }, {
-	        key: 'pokerValue',
-	        value: function pokerValue(v) {
-	            v = v.split('-');
-	            return [this.pokerColor(v[0]), this.pokerIndex(v[1])];
-	        }
-	    }]);
-	
-	    return PokerItem;
-	}(React.Component);
-	
-	exports.default = PokerItem;
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _hall = __webpack_require__(8);
-	
-	var _hall_chat = __webpack_require__(13);
+	var _hall_chat = __webpack_require__(9);
 	
 	var _hall_chat2 = _interopRequireDefault(_hall_chat);
 	
@@ -710,34 +342,22 @@
 	    function Index(props) {
 	        _classCallCheck(this, Index);
 	
-	        var _this = _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
-	
-	        _this.state = {
-	            getLeven: 0
-	        };
-	        return _this;
+	        return _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
 	    }
 	
 	    _createClass(Index, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	
-	            this.props.dispatch((0, _hall.hallList)());
-	            var _props = this.props,
-	                loginStatus = _props.loginStatus,
-	                userInfo = _props.userInfo;
-	
-	            if (!loginStatus) location.hash = 'login';
+	            if (!this.props.loginStatus) location.hash = 'login';
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _props2 = this.props,
-	                hallList = _props2.hallList,
-	                dispatch = _props2.dispatch,
-	                children = _props2.children,
-	                loginStatus = _props2.loginStatus,
-	                userInfo = _props2.userInfo;
+	            var _props = this.props,
+	                dispatch = _props.dispatch,
+	                children = _props.children,
+	                loginStatus = _props.loginStatus,
+	                userInfo = _props.userInfo;
 	
 	            return React.createElement(
 	                'div',
@@ -769,17 +389,6 @@
 	                React.createElement(_hall_chat2.default, { dispatch: dispatch })
 	            );
 	        }
-	    }, {
-	        key: 'handleGetLeven',
-	        value: function handleGetLeven(kp) {
-	            var _this2 = this;
-	
-	            this.setState({
-	                getLeven: 1
-	            }, function () {
-	                _this2.props.dispatch(getLevePoker(kp));
-	            });
-	        }
 	    }]);
 	
 	    return Index;
@@ -795,7 +404,8 @@
 	exports.default = connect(selectState)(Index);
 
 /***/ },
-/* 13 */
+/* 8 */,
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -806,7 +416,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _ac_hall_chat = __webpack_require__(14);
+	var _ac_hall_chat = __webpack_require__(10);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -901,7 +511,7 @@
 	exports.default = connect(selectState)(HallChat);
 
 /***/ },
-/* 14 */
+/* 10 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -949,7 +559,7 @@
 	};
 
 /***/ },
-/* 15 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -960,7 +570,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _ac_pub = __webpack_require__(16);
+	var _ac_pub = __webpack_require__(12);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -1026,7 +636,7 @@
 	exports.default = connect(selectState)(LoginPage);
 
 /***/ },
-/* 16 */
+/* 12 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1050,9 +660,38 @@
 	        });
 	    };
 	};
+	
+	var HallList = exports.HallList = function HallList() {
+	    return function (dispatch, getState) {
+	        get('/hall/list').then(function (d) {
+	            var list = [],
+	                resList = d.data.list;
+	            for (var key in resList) {
+	                list.push({
+	                    id: key,
+	                    user: resList[key].user
+	                });
+	            }
+	            dispatch({
+	                type: 'HallList',
+	                data: list
+	            });
+	        });
+	    };
+	};
+	
+	var JoinHome = exports.JoinHome = function JoinHome(homeId) {
+	    return function (dispatch, getState) {
+	        get('/hall/join', {
+	            id: homeId
+	        }).then(function (d) {
+	            d.data.status ? location.hash = 'index/game/' + d.data.id : alert(d.message);
+	        });
+	    };
+	};
 
 /***/ },
-/* 17 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1063,7 +702,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _hall = __webpack_require__(8);
+	var _ac_pub = __webpack_require__(12);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -1084,6 +723,11 @@
 	    }
 	
 	    _createClass(Hall, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.props.dispatch((0, _ac_pub.HallList)());
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var _props = this.props,
@@ -1100,7 +744,7 @@
 	                        return React.createElement(
 	                            'div',
 	                            { className: 'game_home', onClick: function onClick() {
-	                                    dispatch((0, _hall.joinGame)(v.id));
+	                                    dispatch((0, _ac_pub.JoinHome)(v.id));
 	                                }, key: 'hall_home_' + k },
 	                            React.createElement('div', { className: 'user_position top' }),
 	                            React.createElement('div', { className: 'user_position left' }),
@@ -1122,14 +766,14 @@
 	
 	var selectState = function selectState(state, ownProps) {
 	    return {
-	        hallList: state.Hall.hallList
+	        hallList: state.Pub.hallList
 	    };
 	};
 	
 	exports.default = connect(selectState)(Hall);
 
 /***/ },
-/* 18 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1140,9 +784,9 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _ac_game = __webpack_require__(19);
+	var _ac_game = __webpack_require__(15);
 	
-	var _userPoker = __webpack_require__(10);
+	var _userPoker = __webpack_require__(16);
 	
 	var _userPoker2 = _interopRequireDefault(_userPoker);
 	
@@ -1170,7 +814,7 @@
 	    _createClass(GameHome, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            (0, _ac_game.Init)(this.props.dispatch);
+	            this.props.params.id ? (0, _ac_game.Init)(this.props.dispatch, this.props.params.id) : location.hash = 'index';
 	        }
 	    }, {
 	        key: 'componentWillUnmount',
@@ -1182,13 +826,16 @@
 	        value: function render() {
 	            var _props = this.props,
 	                dispatch = _props.dispatch,
+	                params = _props.params,
 	                socketStatu = _props.socketStatu,
 	                homeInfo = _props.homeInfo,
 	                redyStatus = _props.redyStatus,
 	                pokerData = _props.pokerData,
 	                addHomeStatu = _props.addHomeStatu,
 	                homeId = _props.homeId,
-	                pokerList = _props.pokerList;
+	                pokerList = _props.pokerList,
+	                sureSuper = _props.sureSuper,
+	                willSuper = _props.willSuper;
 	
 	            return React.createElement(
 	                'div',
@@ -1211,7 +858,7 @@
 	                            return (0, _ac_game.RedyGo)();
 	                        } },
 	                    'redy'
-	                ) : React.createElement(_userPoker2.default, { dispatch: dispatch, data: pokerData })
+	                ) : React.createElement(_userPoker2.default, { dispatch: dispatch, data: pokerData, pokerList: pokerList, sureSuper: sureSuper, willSuper: willSuper })
 	            );
 	        }
 	    }]);
@@ -1228,14 +875,17 @@
 	
 	        addHomeStatu: state.Game.addHomeStatu,
 	        homeId: state.Game.homeId,
-	        pokerList: state.Game.pokerList
+	
+	        pokerList: state.Game.pokerList,
+	        sureSuper: state.Game.sureSuper,
+	        willSuper: state.Game.willSuper
 	    };
 	};
 	
 	exports.default = connect(selectState)(GameHome);
 
 /***/ },
-/* 19 */
+/* 15 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1243,122 +893,105 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	var player = {},
+	var player,
 	    dispatch,
 	    pokerList = [];
-	var Init = exports.Init = function Init(ReducerDispatch) {
+	var Init = exports.Init = function Init(ReducerDispatch, homeId) {
 	    dispatch = ReducerDispatch;
-	    player = io.connect('ws://' + location.host + '/game');
-	
-	    player.on('connectedOk', function (d) {
+	    if (typeof player == 'undefined') {
+	        player = io.connect('ws://' + location.host + '/game');
+	        LisentAdd(homeId);
+	    } else player.emit('JionGameHome', { id: homeId }, function (d) {
 	        dispatch({
-	            type: 'soket_connectHome',
-	            statu: d.statu
-	        });
-	    });
-	
-	    player.on('startGame', function (d) {
-	        pokerList = d.data.list;
-	        dispatch({
-	            type: 'GamePubSet',
-	            key: 'pokerData',
-	            data: {
-	                list: d.data.list.sort(pokerSort),
-	                super: d.data.super
-	            }
-	        });
-	    });
-	
-	    player.on('setSuper', function (d) {
-	        dispatch({
-	            type: 'GamePubSet',
-	            key: 'pokerData',
-	            data: {
-	                list: pokerList.concat(d.data).sort(pokerSort),
-	                super: 1
-	            }
+	            type: 'GameConnectInit',
+	            statu: d.status,
+	            homeInfo: d.data
 	        });
 	    });
 	};
+	
+	var LisentAdd = function LisentAdd(homeId) {
+	
+	    player.on('ERROR', function (d) {
+	        console.log(d.data);
+	        location.hash = 'index';
+	    });
+	    player.on('namespace', function (d) {
+	        console.log(d.msg);
+	    });
+	
+	    player.on('connectedOk', function (d) {
+	        var status = d.statu;
+	        player.emit('JionGameHome', { id: homeId }, function (d) {
+	            dispatch({
+	                type: 'GameConnectInit',
+	                statu: d.status,
+	                homeInfo: d.data
+	            });
+	        });
+	    });
+	
+	    player.on('startGame', function () {
+	        player.emit('startGame', {}, function (d) {
+	            pokerList = d.list;
+	            console.log(d);
+	            dispatch({
+	                type: 'GamePokerSet',
+	                poker: pokerList.sort(pokerSort),
+	                sureSuper: 0,
+	                willSuper: d.super
+	            });
+	        });
+	    });
+	};
+	
 	var RedyGo = exports.RedyGo = function RedyGo() {
 	    player.emit('redygo', {}, function (d) {
 	        console.log(d);
 	        dispatch({
 	            type: 'GamePubSet',
 	            key: 'redyStatus',
-	            value: 1
+	            value: d.status
 	        });
 	    });
 	};
-	var AddPlayHome = exports.AddPlayHome = function AddPlayHome(dispatch, homeId) {
-	    player.emit('addPlayHome', {
-	        id: homeId
-	    });
-	    player.on('addHomeStatu', function (d) {
-	        dispatch({
-	            type: 'soket_addHome',
-	            statu: d.statu,
-	            homeId: d.id
-	        });
-	    });
+	var CheckUserInHome = exports.CheckUserInHome = function CheckUserInHome(homeId) {
+	    player.emit('checkUserInHome', { id: homeId }, function (d) {});
 	};
 	
-	var getPoker = exports.getPoker = function getPoker(dispatch) {
-	    player.emit('getPoker');
-	    player.on('getPoker', function (d) {
-	        var poker = sortPoker(d.poker);
-	        console.log(poker);
-	        dispatch({
-	            type: 'setPoker',
-	            pokerList: poker
-	        });
-	    });
-	};
-	
-	var getLevePoker = exports.getLevePoker = function getLevePoker(playerIndex) {
-	    return function (dispatch, getState) {
-	        player.emit('getLevePoker');
-	        player.on('getLevePoker', function (d) {
-	            var AllP = getState().Socket.pokerList,
-	                poker = void 0;
-	            console.log(d.data);
-	            d.data.map(function (v, k) {
-	                AllP[playerIndex].push(v);
-	            });
-	            poker = sortPoker(AllP);
+	var ImSuper = exports.ImSuper = function ImSuper() {
+	    player.emit('imSuper', {}, function (d) {
+	        if (d.status) {
+	            console.log(pokerList.concat(d.poker).sort(pokerSort));
+	            console.log(d.poker);
 	            dispatch({
-	                type: 'setPoker',
-	                pokerList: poker
+	                type: 'GamePokerSet',
+	                poker: pokerList.concat(d.poker).sort(pokerSort),
+	                sureSuper: 1,
+	                willSuper: 0
 	            });
-	        });
-	    };
+	        } else alert('你不是地主');
+	    });
 	};
 	
-	var WillSentPoker = exports.WillSentPoker = function WillSentPoker(index, sentPokerList, callBack) {
+	var WillSentPoker = exports.WillSentPoker = function WillSentPoker(sentPokerList, callBack) {
 	    return function (dispatch, getState) {
-	        var AllPoker = getState().Socket.pokerList,
-	            thisPoker = AllPoker[index],
-	            canSent = checkPokerRule(thisPoker, sentPokerList);
-	        //console.log(canSent);
+	        var pokerList = getState().Game.pokerList,
+	            canSent = checkPokerRule(pokerList, sentPokerList);
 	        callBack(canSent);
-	        if (!canSent) return;
-	        sentPokerList.map(function (v, k) {
-	            for (var i = 0, len = thisPoker.length; i < len; i++) {
-	                if (thisPoker[i] == v) {
-	                    thisPoker.splice(i, 1);
-	                    break;
+	        if (!canSent) return;else {
+	            player.emit('sentPoker', { poker: sentPokerList }, function (d) {
+	                if (!d.status) {
+	                    alert(d.msg);
+	                } else {
+	                    dispatch({
+	                        type: 'GamePubSet',
+	                        key: 'pokerList',
+	                        value: JSON.parse(JSON.stringify(pokerList))
+	                    });
 	                }
-	            }
-	        });
-	        AllPoker[index] = thisPoker;
-	        var newPoker = [];
-	        AllPoker.map(function (v, k) {
-	            if (k == index) newPoker.push(thisPoker);else newPoker.push(v);
-	        });
-	        dispatch({
-	            type: 'setPoker',
-	            pokerList: newPoker
-	        });
+	            });
+	        }
 	    };
 	};
 	
@@ -1496,7 +1129,127 @@
 	}
 
 /***/ },
-/* 20 */
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _ac_game = __webpack_require__(15);
+	
+	var _pokeritem = __webpack_require__(17);
+	
+	var _pokeritem2 = _interopRequireDefault(_pokeritem);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var UserPoker = function (_React$Component) {
+	    _inherits(UserPoker, _React$Component);
+	
+	    function UserPoker(props) {
+	        _classCallCheck(this, UserPoker);
+	
+	        var _this = _possibleConstructorReturn(this, (UserPoker.__proto__ || Object.getPrototypeOf(UserPoker)).call(this, props));
+	
+	        _this.state = {
+	            sentPoker: []
+	        };
+	        return _this;
+	    }
+	
+	    _createClass(UserPoker, [{
+	        key: 'componentWillReceiveProps',
+	        value: function componentWillReceiveProps(nextProps) {
+	            this.setState({
+	                sentPoker: []
+	            });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+	
+	            var _props = this.props,
+	                dispatch = _props.dispatch,
+	                pokerList = _props.pokerList,
+	                sureSuper = _props.sureSuper,
+	                willSuper = _props.willSuper;
+	
+	            return React.createElement(
+	                'div',
+	                { className: 'playerPoker' },
+	                React.createElement(
+	                    'div',
+	                    { className: 'pokerContent' },
+	                    pokerList.map(function (v, k) {
+	                        return React.createElement(_pokeritem2.default, { k: k, v: v, key: "poker_item_" + k, willSent: _this2.state.sentPoker, selectPokerItem: _this2.handleSelectPokerItem.bind(_this2) });
+	                    })
+	                ),
+	                sureSuper ? '你是地主' : willSuper ? React.createElement(
+	                    'h2',
+	                    { onClick: function onClick() {
+	                            return (0, _ac_game.ImSuper)();
+	                        } },
+	                    '\u53EB\u5730\u4E3B'
+	                ) : '',
+	                React.createElement(
+	                    'p',
+	                    { onClick: this.handleSentPoker.bind(this) },
+	                    '\u51FA\u724C'
+	                )
+	            );
+	        }
+	    }, {
+	        key: 'handleSentPoker',
+	        value: function handleSentPoker(index) {
+	            var sentPoker = this.state.sentPoker,
+	                dispatch = this.props.dispatch;
+	
+	            if (sentPoker.length <= 0) {
+	                alert('请选择你要出的牌');
+	                return;
+	            }
+	            dispatch((0, _ac_game.WillSentPoker)(sentPoker, function (d) {
+	                console.log(d);
+	            }));
+	        }
+	    }, {
+	        key: 'handleSelectPokerItem',
+	        value: function handleSelectPokerItem(v) {
+	            var sentPoker = this.state.sentPoker,
+	                newSentPoker = [],
+	                hashV = 0;;
+	            //console.log(sentPoker);
+	            for (var i = 0, len = sentPoker.length; i < len; i++) {
+	                //console.log(i);
+	                if (sentPoker[i] != v) newSentPoker.push(sentPoker[i]);else hashV = 1;
+	            }
+	            hashV ? '' : newSentPoker.push(v);
+	            //console.log(newSentPoker)
+	            this.setState({
+	                sentPoker: newSentPoker
+	            });
+	        }
+	    }]);
+	
+	    return UserPoker;
+	}(React.Component);
+	
+	exports.default = UserPoker;
+
+/***/ },
+/* 17 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1505,66 +1258,91 @@
 	    value: true
 	});
 	
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var initState = {
-	    statu: 0,
-	    homeInfo: {},
-	    redyStatus: 0,
-	    pokerData: [],
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	    socket: {},
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
-	    addHomeStatu: 0,
-	    homeId: 0,
-	    pokerList: []
-	};
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	function Hall() {
-	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initState;
-	    var action = arguments[1];
+	var PokerItem = function (_React$Component) {
+	    _inherits(PokerItem, _React$Component);
 	
-	    switch (action.type) {
-	        case 'GameSetHomeInfo':
-	            {
-	                return Object.assign({}, state, {
-	                    homeInfo: action.data
-	                });
-	            }
-	        case 'GamePubSet':
-	            {
-	                return Object.assign({}, state, _defineProperty({}, action.key, action.value));
-	            }
-	        case 'setConnectName':
-	            {
-	                return Object.assign({}, state, _defineProperty({}, action.key, action.socket));
-	            }
-	        case 'soket_connectHome':
-	            {
-	                return Object.assign({}, state, {
-	                    statu: action.statu
-	                });
-	            }
-	        case 'soket_addHome':
-	            {
-	                return Object.assign({}, state, {
-	                    addHomeStatu: action.statu,
-	                    homeId: action.homeId
-	                });
-	            }
-	        case 'setPoker':
-	            {
-	                return Object.assign({}, state, {
-	                    pokerList: action.pokerList
-	                });
-	            }
-	        default:
-	            {
-	                return state;
-	            }
+	    function PokerItem(props) {
+	        _classCallCheck(this, PokerItem);
+	
+	        return _possibleConstructorReturn(this, (PokerItem.__proto__ || Object.getPrototypeOf(PokerItem)).call(this, props));
 	    }
-	}
-	exports.default = Hall;
+	
+	    _createClass(PokerItem, [{
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+	
+	            var _props = this.props,
+	                v = _props.v,
+	                k = _props.k,
+	                willSent = _props.willSent;
+	
+	            var pokerValueA = this.pokerValue(v),
+	                isWillSent = 0;
+	            willSent.map(function (vi, ki) {
+	                if (v == vi) isWillSent = 1;
+	            });
+	            return React.createElement(
+	                'div',
+	                { className: 'pokerItem ' + pokerValueA[0].color, style: { left: 30 * k + 'px', top: isWillSent ? '0' : '20px' }, onClick: function onClick() {
+	                        _this2.props.selectPokerItem(v);
+	                    } },
+	                React.createElement(
+	                    'span',
+	                    { className: 'pokerValue' },
+	                    pokerValueA[1]
+	                ),
+	                React.createElement(
+	                    'span',
+	                    { className: 'pokerColortext' },
+	                    pokerValueA[0].text
+	                )
+	            );
+	        }
+	    }, {
+	        key: 'pokerColor',
+	        value: function pokerColor(v) {
+	            switch (v - 0) {
+	                case 1:
+	                    return { text: '黑桃', color: 'blank' };
+	                case 2:
+	                    return { text: '红桃', color: 'red' };
+	                case 3:
+	                    return { text: '梅花', color: 'flower' };
+	                case 4:
+	                    return { text: '方块', color: 'area' };
+	                case 5:
+	                    return { text: '小王', color: 'king_s' };
+	                case 6:
+	                    return { text: '大王', color: 'king' };
+	            }
+	        }
+	    }, {
+	        key: 'pokerIndex',
+	        value: function pokerIndex(v) {
+	            v -= 0;
+	            return v == 11 ? 'J' : v == 12 ? 'Q' : v == 13 ? 'K' : v == 14 ? 'A' : v == 88 ? '王' : v;
+	        }
+	    }, {
+	        key: 'pokerValue',
+	        value: function pokerValue(v) {
+	            v = v.split('-');
+	            return [this.pokerColor(v[0]), this.pokerIndex(v[1])];
+	        }
+	    }]);
+	
+	    return PokerItem;
+	}(React.Component);
+	
+	exports.default = PokerItem;
 
 /***/ }
 /******/ ]);

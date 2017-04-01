@@ -1,10 +1,14 @@
 const {connect} = ReactRedux;
 import {
-    joinGame
-} from '../actions/hall';
+    HallList,
+    JoinHome
+} from '../actions/ac_pub';
 class Hall extends React.Component{
     constructor(props){
         super(props);
+    }
+    componentDidMount(){
+        this.props.dispatch(HallList());
     }
     render(){
         let {hallList,dispatch}=this.props;
@@ -14,7 +18,7 @@ class Hall extends React.Component{
                 {
                     hallList.map((v,k)=>{
                         return(
-                            <div className='game_home' onClick={()=>{dispatch(joinGame(v.id))}} key={'hall_home_'+k}>
+                            <div className='game_home' onClick={()=>{dispatch(JoinHome(v.id))}} key={'hall_home_'+k}>
                                 <div className='user_position top' />
                                 <div className='user_position left' />
                                 <div className='user_position right' />
@@ -31,7 +35,7 @@ class Hall extends React.Component{
 
 const selectState=(state,ownProps)=>{
     return{
-        hallList:state.Hall.hallList
+        hallList:state.Pub.hallList
     }
 }
 

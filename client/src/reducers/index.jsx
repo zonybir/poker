@@ -1,4 +1,3 @@
-import Hall from './sec'
 import Game from './re_game'
 import Pub from './re_pub'
 import HallChat from './re_hall_chat'
@@ -7,7 +6,6 @@ const {combineReducers} = Redux,
     routing=routerReducer,
 
     reducer = combineReducers({
-        Hall,
         Game,
         Pub,
         HallChat,

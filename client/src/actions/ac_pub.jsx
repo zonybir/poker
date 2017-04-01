@@ -15,3 +15,34 @@ export const Login=(name,password)=>{
         })
     }
 }
+
+export const HallList=()=>{
+    return(dispatch,getState)=>{
+        get('/hall/list')
+        .then((d)=>{
+            let list=[],resList=d.data.list;
+            for(let key in resList){
+                list.push({
+                    id:key,
+                    user:resList[key].user
+                })
+            }
+            dispatch({
+                type:'HallList',
+                data:list
+            })
+        })
+    }
+}
+
+export const JoinHome=(homeId)=>{
+    return (dispatch,getState)=>{
+        get('/hall/join',{
+            id:homeId
+        })
+        .then((d)=>{
+            d.data.status?
+            location.hash='index/game/'+d.data.id:alert(d.message);
+        })
+    }
+}

@@ -1,26 +1,14 @@
 const {connect} = ReactRedux;
-import {
-    hallList
-} from '../actions/hall';
-
 import HallChat from './hall_chat';
 class Index extends React.Component{
     constructor(props){
         super(props);
-        this.state={
-            getLeven:0
-        }
     }
     componentDidMount(){
-        
-        this.props.dispatch(hallList());
-        let {loginStatus,userInfo}=this.props;
-        if(!loginStatus) location.hash='login';
+        if(!this.props.loginStatus) location.hash='login';
     }
     render(){
-        let {hallList,dispatch,children,
-                loginStatus,userInfo
-            }=this.props;
+        let {dispatch,children,loginStatus,userInfo}=this.props;
         return(
             <div id='hall'>
                 <div className='header'>
@@ -35,13 +23,6 @@ class Index extends React.Component{
                 <HallChat dispatch={dispatch} />
             </div>
         )
-    }
-    handleGetLeven(kp){
-        this.setState({
-            getLeven:1
-        },()=>{
-            this.props.dispatch(getLevePoker(kp))
-        })
     }
 }
 
