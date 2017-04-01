@@ -1,8 +1,10 @@
 const express = require('express'),
     http = require('http'),
     socket = require('socket.io'),
-    socketServerCore = require('./src/socketServer.js');
+    socketServerCore = require('./src/socketServer.js'),
     app=express(),
+    server = http.Server(app)
+    io = socket(server);
     server = http.Server(app),
     io = socket(server),
 
