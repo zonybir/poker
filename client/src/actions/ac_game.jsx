@@ -8,6 +8,7 @@ export const Init=(ReducerDispatch,homeId)=>{
         LisentAdd(homeId);
     }else
     player.emit('JionGameHome',{id:homeId},(d)=>{
+        console.log(d);
         dispatch({
             type:'GameConnectInit',
             statu:d.status,
@@ -26,13 +27,12 @@ const LisentAdd=(homeId)=>{
         console.log(d.msg);
     })
 
-    player.on('connectedOk',function(d){
-        let status=d.statu;
+    player.on('connectedOk',function(){
         player.emit('JionGameHome',{id:homeId},(d)=>{
             dispatch({
                 type:'GameConnectInit',
-                statu:d.status,
-                homeInfo:d.data
+                status:d.status,
+                homeInfo:d.homeInfo
             })
         }) 
     

@@ -1,5 +1,6 @@
 class Ruls{
     constructor(poker,outList){
+        typeof outList == 'string' ? outList=outList.split(',') :'';
         this.poker=poker;
         this.outPoker=outList;
         this.rule={
@@ -9,7 +10,7 @@ class Ruls{
             sameMax:1,
             diffrentLen:0
         };
-        this.inie();
+        this.init();
     }
     init(){//count diffrent poker item in rule,and push into defPoker
         let diffrentPoker=[],pokerMap={};
@@ -28,7 +29,7 @@ class Ruls{
             sureRule=false,
             diffrentPokerLen=diffrentPoker.length;
 
-        diffrentPoker.map((v,k)=>diffrPokerNum.push(rule[v]));
+        diffrentPoker.map((v,k)=>diffrPokerNum.push(pokerMap[v]));
 
         sameMax=Math.max.apply(this,diffrPokerNum);// get max diffrent poker num 
         this.rule={
@@ -39,10 +40,20 @@ class Ruls{
             diffrentLen:diffrentPokerLen
         }
     }
+    canOut(){
+        if(!this.inPoker()) return false;
+        switch(this.rule.sameMax){
+            case 1: return this.X();
+            case 2: return this.XX();
+            case 3: return this.XXX();
+            case 4: return this.XXX();
+            default: return false;
+        }
+    }
     inPoker(){
         return this.outPoker.every((v)=>{return this.poker.indexOf(v) != -1;})
     }
-    isSingle(){
+    X(){
         let {diffrentLen,diffrent}=this.rule;
         let isSing=false;
         if(diffrentLen==1) isSing=true;
@@ -55,7 +66,7 @@ class Ruls{
         }else isOrder=false;
         return isSing?isSing:isOrder;
     }
-    isDouble(){
+    XX(){
         let {diffrentLen,diffrent,map}=this.rule;
         let isDoub=false;
         if(diffrentLen==1) isDoub=true;
@@ -70,7 +81,7 @@ class Ruls{
         }else isDoubOrder=false;
         return isDoub?isDoub:isDoubOrder;
     }
-    isThird(){
+    XXX(){
         let {diffrentLen,diffrent,map}=this.rule;
         let AAAX=false,AAABBBX=true;
         if(diffrentLen<=2) AAAX=true;
@@ -110,7 +121,7 @@ class Ruls{
         };
         return AAAX?AAAX:AAABBBX;
     }
-    isFourth(){
+    XXXX(){
         let {diffrentLen,diffrent,map}=this.rule;
         let AAAA=false;
         if(diffrentLen == 1)  AAAA=true;

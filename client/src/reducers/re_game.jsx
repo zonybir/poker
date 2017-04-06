@@ -25,7 +25,7 @@ function Hall(state=initState,action){
         }
         case 'GameConnectInit':{
             return Object.assign({},state,{
-                statu:action.statu,
+                status:action.status,
                 homeInfo:action.homeInfo
             })
         }

@@ -4,8 +4,6 @@ const express = require('express'),
     socketServerCore = require('./src/socketServer.js'),
     app=express(),
     server = http.Server(app)
-    io = socket(server);
-    server = http.Server(app),
     io = socket(server),
 
     cookieParser = require('cookie-parser'),
@@ -24,7 +22,7 @@ app.use(bodyParser.text({ type: 'text/html' }));
 
 app.use(cookieParser());
 var sessionMiddleware = session({
-     secret:'zonybir',
+    secret:'zonybir',
     resave:false,
     saveUninitialized:true
  });
@@ -33,18 +31,18 @@ var sessionMiddleware = session({
  })
 app.use(sessionMiddleware);
 
-global.hall={};
-global.gameUser={};
+global.userGameMap={};
+global.gameHome={};
 [1,2,3,4,5].map((v,k)=>{
     let id=Math.round(Math.random()*10000);
-    global.gameUser[id]={
+    global.gameHome[id]={
         user:[],
-        super:-99
+        poker:[],
+        dizhu:-99,
+        out:-1
     };
-    global.hall[id]={
-        user:[]
-    }
 })
+
 router(app);
 socketServerCore(io);
 

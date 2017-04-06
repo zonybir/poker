@@ -20,16 +20,10 @@ export const HallList=()=>{
     return(dispatch,getState)=>{
         get('/hall/list')
         .then((d)=>{
-            let list=[],resList=d.data.list;
-            for(let key in resList){
-                list.push({
-                    id:key,
-                    user:resList[key].user
-                })
-            }
+            let resList=d.data.list;
             dispatch({
                 type:'HallList',
-                data:list
+                data:resList
             })
         })
     }

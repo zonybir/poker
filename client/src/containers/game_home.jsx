@@ -36,7 +36,7 @@ class GameHome extends React.Component{
 
 const selectState=(state,ownProps)=>{
     return{
-        socketStatu:state.Game.statu,
+        socketStatu:state.Game.status,
         homeInfo:state.Game.homeInfo,
         redyStatus:state.Game.redyStatus,
         pokerData:state.Game.pokerData,

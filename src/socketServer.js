@@ -1,12 +1,13 @@
 const Poker=require('./poker/index.js');
 const CheckRule = require('./poker/rule');
+const SocketUtil = require('./pub/pokerSocketInfon');
+const Rule = require('./poker/rule.js')
 let playPoker={};
 const server=(io)=>{
 
     io.use((socket,next)=>{
         let user = socket.request.session.user;
         if(user && user.id){
-            socket.request.session.user.view++;
             next();
         }
         else return false;
@@ -38,90 +39,49 @@ const server=(io)=>{
 
     const game=io.of('/game')
     .on('connection',(socket)=>{
-        let user=socket.request.session.user,
-            homeId=user.homeId,
-            gameHome=global.hall[homeId],
-            PokerHome=global.gameUser[homeId];
-        if(!homeId || !gameHome || gameHome.user.indexOf(user.name)<0 || homeId!=user.homeId){
-            socket.emit('ERROR',{data:[homeId,gameHome]});
-            console.log('error socket conncet-------------------');
-            console.log(user);
-            console.log(gameHome);
-            console.log('========================================')
-            return;
-        }
-        socket.emit('connectedOk',{data:'wellCom zonybir\'s Socket',statu:1})
-
+        let Game=new SocketUtil(socket);
+        if(!Game.status) return;
+        socket.emit('connectedOk');
         socket.on('JionGameHome',(d,fn)=>{
-            socket.join('gameHome_'+homeId,()=>{
-                console.log(socket.rooms);
-                socket.to('gameHome_'+homeId).emit('namespace',{msg:user.name+'加入房间'});
-                fn({status:1,data:gameHome})
+            Game=new SocketUtil(socket);
+            socket.join('gameHome_'+Game.id,()=>{
+                socket.to('gameHome_'+Game.id).emit('namespace',{msg:Game.name+'加入房间'});
+                console.log(Game.getHomeInfo());
+                fn({
+                    homeInfo:Game.getHomeInfo(),
+                    info:'wellCom zonybir\'s Socket',
+                    status:1
+                })
             });
         })
 
         socket.on('redygo',(d,fn)=>{//entry game home and wait start
-            let len=PokerHome.user.length,
-                userHomeObj={
-                    name:user.name,
-                    poker:[],
-                    super:0,
-                    canSent:0
-                };
-            if(len<=0){
-                PokerHome.user.push(userHomeObj);
-                fn({status:1,msg:'准备成功,等待其他玩家准备'});
-            }else{
-                let hasIn=0;
-                PokerHome.user.map((v,k)=>{
-                    v.name==user.name?hasIn=1:'';
-                })
-                if(hasIn){
-                    fn({status:1,msg:'短线重连,准备成功,等待其他玩家准备'});
-                    if(len>=2){
-                        fn({status:1,msg:'游戏即克开始'});
-                        let playPoker=new Poker(),
-                            pokerList=playPoker.get().playerP;
-                        pokerList.map((v,k)=>{
-                            PokerHome.user[k].poker=v;
-                        })
-                        let superWho=Math.round(Math.random()*100)%3;
-                        PokerHome.super=superWho;
-                        PokerHome.canSent=superWho;
-                        game.in('gameHome_'+homeId).emit('startGame');
+            Game.setRedy((res)=>{
+                switch(res.type){//1 准备成功 等待其他玩家准备   0：准备失败  2：准备成功 开始游戏
+                    case 0:{
+                        fn({status:0,msg:res.msg});
+                        break;
                     }
-                }else if(len>=3){
-                    fn({status:0,msg:'房间已满'});
-                }else{
-                    PokerHome.user.push(userHomeObj);
-                    if(len==2){
-                        fn({status:1,msg:'游戏即克开始'});
-                        let playPoker=new Poker(),
-                            pokerList=playPoker.get().playerP;
-                        pokerList.map((v,k)=>{
-                            PokerHome.user[k].poker=v;
-                        })
-                        let superWho=Math.round(Math.random()*100)%3;
-                        PokerHome.super=superWho;
-                        PokerHome.canSent=superWho;
-                        PokerHome.obj=playPoker;
-                        game.in('gameHome_'+homeId).emit('startGame');
-                        console.log('=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=');
-                    }else{
+                    case 1:{
                         fn({status:1,msg:'准备成功,等待其他玩家准备'});
+                        break;
                     }
-                    
+                    case 2:{
+                        fn({status:1,msg:'游戏即克开始'});
+                        Game.setPoker(new Poker(),()=>{
+                            game.in('gameHome_'+Game.id).emit('startGame');
+                        })
+                    }
                 }
-            }
+            })
         })
 
         socket.on('startGame',(d,fn)=>{
-            console.log(123123123);
             let poker={},
                 isSuper=0;
-            PokerHome.user.map((v,k)=>{
-                if(v.name==user.name){
-                    if(PokerHome.super == k) isSuper=1;
+            Game.gameHome.user.map((v,k)=>{
+                if(v.name==Game.name){
+                    if(Game.gameHome.dizhu == k) isSuper=1;
                     poker=v
                 }
             })
@@ -130,19 +90,24 @@ const server=(io)=>{
 
         socket.on('imSuper',(data,fn)=>{
             let isSuper=0;
-            PokerHome.user.map((v,k)=>{if(v.name == user.name && k==PokerHome.super) isSuper=1;})
+            Game.gameHome.user.map((v,k)=>{if(v.name == Game.name && k==Game.gameHome.dizhu) isSuper=1;})
             isSuper?fn({
                 status:1,
-                poker:PokerHome.obj.state.levenP
+                poker:Game.gameHome.poker
             }):fn({status:0,poker:[]});
         })
 
         socket.on('sentPoker',(d,fn)=>{
-            let userData={};
-            PokerHome.user.map((v,k)=>{
-                if(v.name == user.name) userData=v;
-            })
-
+            let pokerRule= new Rule(Game.getUserPoker(),d.poker),
+                canOut=pokerRule.canOut();
+            if(canOut){
+                Game.setOutPoker(d.poker);
+                fn({status:1});
+                let nowPoker=Game.getUserPoker();
+                if(nowPoker.length<=0) console.log('you win');
+            }else{
+                fn({status:0})
+            }
         })
     })
     .on('disconnected',()=>{

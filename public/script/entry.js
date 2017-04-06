@@ -50,7 +50,7 @@
 	
 	var _reducers2 = _interopRequireDefault(_reducers);
 	
-	var _routes = __webpack_require__(6);
+	var _routes = __webpack_require__(5);
 	
 	var _routes2 = _interopRequireDefault(_routes);
 	
@@ -88,15 +88,15 @@
 	    value: true
 	});
 	
-	var _re_game = __webpack_require__(3);
+	var _re_game = __webpack_require__(2);
 	
 	var _re_game2 = _interopRequireDefault(_re_game);
 	
-	var _re_pub = __webpack_require__(4);
+	var _re_pub = __webpack_require__(3);
 	
 	var _re_pub2 = _interopRequireDefault(_re_pub);
 	
-	var _re_hall_chat = __webpack_require__(5);
+	var _re_hall_chat = __webpack_require__(4);
 	
 	var _re_hall_chat2 = _interopRequireDefault(_re_hall_chat);
 	
@@ -116,8 +116,7 @@
 	exports.default = reducer;
 
 /***/ },
-/* 2 */,
-/* 3 */
+/* 2 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -156,7 +155,7 @@
 	        case 'GameConnectInit':
 	            {
 	                return Object.assign({}, state, {
-	                    statu: action.statu,
+	                    status: action.status,
 	                    homeInfo: action.homeInfo
 	                });
 	            }
@@ -184,7 +183,7 @@
 	exports.default = Hall;
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -226,7 +225,7 @@
 	exports.default = Pub;
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -264,7 +263,7 @@
 	exports.default = HallChat;
 
 /***/ },
-/* 6 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -273,19 +272,19 @@
 	    value: true
 	});
 	
-	var _index = __webpack_require__(7);
+	var _index = __webpack_require__(6);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
-	var _login = __webpack_require__(11);
+	var _login = __webpack_require__(9);
 	
 	var _login2 = _interopRequireDefault(_login);
 	
-	var _hall = __webpack_require__(13);
+	var _hall = __webpack_require__(11);
 	
 	var _hall2 = _interopRequireDefault(_hall);
 	
-	var _game_home = __webpack_require__(14);
+	var _game_home = __webpack_require__(12);
 	
 	var _game_home2 = _interopRequireDefault(_game_home);
 	
@@ -310,7 +309,7 @@
 	);
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -321,7 +320,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _hall_chat = __webpack_require__(9);
+	var _hall_chat = __webpack_require__(7);
 	
 	var _hall_chat2 = _interopRequireDefault(_hall_chat);
 	
@@ -404,8 +403,7 @@
 	exports.default = connect(selectState)(Index);
 
 /***/ },
-/* 8 */,
-/* 9 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -416,7 +414,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _ac_hall_chat = __webpack_require__(10);
+	var _ac_hall_chat = __webpack_require__(8);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -511,7 +509,7 @@
 	exports.default = connect(selectState)(HallChat);
 
 /***/ },
-/* 10 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -559,7 +557,7 @@
 	};
 
 /***/ },
-/* 11 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -570,7 +568,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _ac_pub = __webpack_require__(12);
+	var _ac_pub = __webpack_require__(10);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -636,7 +634,7 @@
 	exports.default = connect(selectState)(LoginPage);
 
 /***/ },
-/* 12 */
+/* 10 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -664,17 +662,10 @@
 	var HallList = exports.HallList = function HallList() {
 	    return function (dispatch, getState) {
 	        get('/hall/list').then(function (d) {
-	            var list = [],
-	                resList = d.data.list;
-	            for (var key in resList) {
-	                list.push({
-	                    id: key,
-	                    user: resList[key].user
-	                });
-	            }
+	            var resList = d.data.list;
 	            dispatch({
 	                type: 'HallList',
-	                data: list
+	                data: resList
 	            });
 	        });
 	    };
@@ -691,7 +682,7 @@
 	};
 
 /***/ },
-/* 13 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -702,7 +693,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _ac_pub = __webpack_require__(12);
+	var _ac_pub = __webpack_require__(10);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -773,7 +764,7 @@
 	exports.default = connect(selectState)(Hall);
 
 /***/ },
-/* 14 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -784,9 +775,9 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _ac_game = __webpack_require__(15);
+	var _ac_game = __webpack_require__(13);
 	
-	var _userPoker = __webpack_require__(16);
+	var _userPoker = __webpack_require__(14);
 	
 	var _userPoker2 = _interopRequireDefault(_userPoker);
 	
@@ -868,7 +859,7 @@
 	
 	var selectState = function selectState(state, ownProps) {
 	    return {
-	        socketStatu: state.Game.statu,
+	        socketStatu: state.Game.status,
 	        homeInfo: state.Game.homeInfo,
 	        redyStatus: state.Game.redyStatus,
 	        pokerData: state.Game.pokerData,
@@ -885,7 +876,7 @@
 	exports.default = connect(selectState)(GameHome);
 
 /***/ },
-/* 15 */
+/* 13 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -902,6 +893,7 @@
 	        player = io.connect('ws://' + location.host + '/game');
 	        LisentAdd(homeId);
 	    } else player.emit('JionGameHome', { id: homeId }, function (d) {
+	        console.log(d);
 	        dispatch({
 	            type: 'GameConnectInit',
 	            statu: d.status,
@@ -920,13 +912,12 @@
 	        console.log(d.msg);
 	    });
 	
-	    player.on('connectedOk', function (d) {
-	        var status = d.statu;
+	    player.on('connectedOk', function () {
 	        player.emit('JionGameHome', { id: homeId }, function (d) {
 	            dispatch({
 	                type: 'GameConnectInit',
-	                statu: d.status,
-	                homeInfo: d.data
+	                status: d.status,
+	                homeInfo: d.homeInfo
 	            });
 	        });
 	    });
@@ -1129,7 +1120,7 @@
 	}
 
 /***/ },
-/* 16 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1140,9 +1131,9 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _ac_game = __webpack_require__(15);
+	var _ac_game = __webpack_require__(13);
 	
-	var _pokeritem = __webpack_require__(17);
+	var _pokeritem = __webpack_require__(15);
 	
 	var _pokeritem2 = _interopRequireDefault(_pokeritem);
 	
@@ -1249,7 +1240,7 @@
 	exports.default = UserPoker;
 
 /***/ },
-/* 17 */
+/* 15 */
 /***/ function(module, exports) {
 
 	'use strict';

@@ -1,5 +1,5 @@
 class Pk{
-    constructor(data){
+    constructor(){
         this.state={
             poker:[],
             playerP:[[],[],[]],
